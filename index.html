@@ -1,0 +1,4542 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>공부 게임</title>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
+ onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';s.onerror=function(){window.__peerLoadFailed=true;};document.head.appendChild(s);})()"></script>
+
+<style>
+*{
+ box-sizing:border-box;
+ -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ font-family:Arial,"Noto Sans KR",sans-serif;
+ background:#080c16;
+ color:#fff;
+}
+
+button,input{
+ font:inherit;
+}
+
+button{
+ cursor:pointer;
+ touch-action:manipulation;
+}
+
+.hidden{
+ display:none!important;
+}
+
+/* 시작 화면 */
+
+#start{
+ width:100%;
+ height:100dvh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:18px;
+ background:
+ radial-gradient(circle at 15% 15%,#354fa5 0,transparent 35%),
+ radial-gradient(circle at 85% 85%,#703e91 0,transparent 35%),
+ #080c16;
+}
+
+.card{
+ width:min(430px,100%);
+ padding:28px;
+ border:1px solid #34405d;
+ border-radius:24px;
+ background:#131b2f;
+ box-shadow:0 30px 100px #0009;
+}
+
+.logo{
+ text-align:center;
+ font-size:34px;
+ font-weight:1000;
+ letter-spacing:1px;
+}
+
+.sub{
+ text-align:center;
+ color:#8290aa;
+ font-size:12px;
+ margin:8px 0 25px;
+}
+
+label{
+ display:block;
+ color:#8d9ab3;
+ font-size:11px;
+ margin:12px 0 6px;
+}
+
+.input{
+ width:100%;
+ height:50px;
+ border:1px solid #38445f;
+ border-radius:11px;
+ outline:none;
+ background:#0e1527;
+ color:#fff;
+ padding:0 13px;
+}
+
+.input:focus{
+ border-color:#7086ff;
+}
+
+.primary{
+ width:100%;
+ height:50px;
+ margin-top:10px;
+ border:0;
+ border-radius:11px;
+ background:linear-gradient(135deg,#607cff,#8658e5);
+ color:white;
+ font-weight:900;
+}
+
+.sep{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ margin:18px 0;
+ color:#536079;
+ font-size:10px;
+}
+
+.sep:before,
+.sep:after{
+ content:"";
+ height:1px;
+ flex:1;
+ background:#2c354b;
+}
+
+#error{
+ min-height:18px;
+ margin-top:9px;
+ text-align:center;
+ color:#ff7084;
+ font-size:11px;
+}
+
+/* 앱 */
+
+#app{
+ width:100%;
+ height:100dvh;
+ display:grid;
+ grid-template-columns:230px 1fr;
+}
+
+.side{
+ background:#101629;
+ border-right:1px solid #28334c;
+ display:flex;
+ flex-direction:column;
+ min-height:0;
+}
+
+.roomBox{
+ padding:16px;
+ border-bottom:1px solid #28334c;
+}
+
+.roomTitle{
+ font-weight:1000;
+}
+
+.roomCode{
+ margin-top:10px;
+ padding:11px;
+ border-radius:9px;
+ background:#202a47;
+ color:#aebcff;
+ text-align:center;
+ font-size:20px;
+ font-weight:1000;
+ letter-spacing:5px;
+}
+
+.sideBtn{
+ width:100%;
+ height:41px;
+ margin-top:8px;
+ border:1px solid #35405b;
+ border-radius:9px;
+ background:#171f34;
+ color:#e0e5f0;
+}
+
+.peopleTitle{
+ padding:13px 12px 5px;
+ color:#74819b;
+ font-size:10px;
+ font-weight:900;
+}
+
+.users{
+ flex:1;
+ min-height:0;
+ overflow:auto;
+ padding:4px 9px;
+}
+
+.user{
+ display:flex;
+ align-items:center;
+ gap:9px;
+ padding:8px;
+ border-radius:9px;
+}
+
+.avatar{
+ width:34px;
+ height:34px;
+ flex:none;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:50%;
+ background:linear-gradient(135deg,#5d78ff,#8759e6);
+ font-weight:900;
+}
+
+.userName{
+ min-width:0;
+ overflow:hidden;
+ white-space:nowrap;
+ text-overflow:ellipsis;
+ font-size:12px;
+}
+
+.host{
+ color:#ffd65c;
+ font-size:9px;
+ margin-left:4px;
+}
+
+.teamA{
+ color:#ff7080;
+}
+
+.teamB{
+ color:#6790ff;
+}
+
+.bottom{
+ padding:10px;
+}
+
+.leave{
+ color:#ff788d;
+}
+
+/* 채팅 */
+
+.main{
+ min-width:0;
+ min-height:0;
+ display:flex;
+ flex-direction:column;
+}
+
+.header{
+ height:58px;
+ flex:none;
+ padding:0 15px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:#0e1424;
+ border-bottom:1px solid #28334c;
+}
+
+.headerTitle{
+ font-weight:900;
+}
+
+.status{
+ color:#8390a9;
+ font-size:10px;
+}
+
+.dot{
+ display:inline-block;
+ width:7px;
+ height:7px;
+ margin-right:5px;
+ border-radius:50%;
+ background:#35df88;
+ box-shadow:0 0 8px #35df88;
+}
+
+.messages{
+ flex:1;
+ min-height:0;
+ overflow:auto;
+ padding:15px;
+}
+
+.message{
+ display:flex;
+ margin-bottom:12px;
+}
+
+.message.mine{
+ justify-content:flex-end;
+}
+
+.messageInner{
+ max-width:75%;
+}
+
+.messageInfo{
+ color:#8491aa;
+ font-size:9px;
+ margin-bottom:4px;
+}
+
+.mine .messageInfo{
+ text-align:right;
+}
+
+.bubble{
+ padding:10px 12px;
+ border-radius:12px;
+ background:#19223a;
+ line-height:1.45;
+ word-break:break-word;
+}
+
+.mine .bubble{
+ background:linear-gradient(135deg,#5975e5,#7859d8);
+}
+
+.system{
+ margin:9px;
+ text-align:center;
+ color:#69768e;
+ font-size:10px;
+}
+
+.system span{
+ padding:6px 10px;
+ border-radius:20px;
+ background:#121a2c;
+}
+
+.chat{
+ flex:none;
+ padding:9px;
+ padding-bottom:max(9px,env(safe-area-inset-bottom));
+ background:#0e1424;
+ border-top:1px solid #28334c;
+}
+
+.chatForm{
+ display:flex;
+ gap:7px;
+}
+
+.chatInput{
+ flex:1;
+ min-width:0;
+ height:45px;
+ border:1px solid #38445f;
+ border-radius:11px;
+ background:#141c30;
+ color:#fff;
+ padding:0 12px;
+ outline:none;
+}
+
+.send{
+ width:62px;
+ border:0;
+ border-radius:11px;
+ background:#607af4;
+ color:#fff;
+ font-weight:900;
+}
+
+/* 게임 */
+
+#game{
+ position:fixed;
+ inset:0;
+ z-index:100;
+ display:flex;
+ flex-direction:column;
+ background:#080c16;
+}
+
+.gameHeader{
+ height:58px;
+ flex:none;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 13px;
+ background:#11182b;
+ border-bottom:1px solid #2b3650;
+}
+
+.closeGame{
+ min-height:40px;
+ padding:0 14px;
+ border:1px solid #394560;
+ border-radius:9px;
+ background:#202a42;
+ color:#fff;
+}
+
+.gameBody{
+ flex:1;
+ min-height:0;
+ overflow:auto;
+ padding:14px;
+}
+
+.menu{
+ width:min(900px,100%);
+ margin:auto;
+}
+
+.menuTitle{
+ text-align:center;
+ margin-bottom:18px;
+}
+
+.menuTitle h1{
+ margin:3px;
+ font-size:28px;
+}
+
+.menuTitle p{
+ color:#8592ab;
+ font-size:11px;
+}
+
+.gamesGrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:9px;
+}
+
+.gameCard{
+ min-height:112px;
+ padding:12px;
+ border:1px solid #303b57;
+ border-radius:15px;
+ background:#141d32;
+ color:#fff;
+ text-align:left;
+}
+
+.gameCard:active{
+ transform:scale(.97);
+}
+
+.gameIcon{
+ font-size:26px;
+}
+
+.gameCard b{
+ display:block;
+ margin-top:6px;
+ font-size:13px;
+}
+
+.gameCard small{
+ display:block;
+ margin-top:4px;
+ color:#7d8aa4;
+ font-size:9px;
+ line-height:1.4;
+}
+
+.modes{
+ margin:17px 0;
+ text-align:center;
+}
+
+.mode{
+ min-height:40px;
+ padding:0 17px;
+ margin:3px;
+ border:1px solid #37435f;
+ border-radius:9px;
+ background:#141c31;
+ color:#cbd4e6;
+}
+
+.mode.selected{
+ background:#607af5;
+ color:white;
+}
+
+.startBtn{
+ min-height:46px;
+ padding:0 25px;
+ border:0;
+ border-radius:11px;
+ background:linear-gradient(135deg,#607bff,#8658e4);
+ color:#fff;
+ font-weight:900;
+}
+
+/* 플레이 */
+
+.play{
+ width:min(850px,100%);
+ margin:auto;
+ text-align:center;
+}
+
+.play h2{
+ margin:3px 0 5px;
+}
+
+.info{
+ color:#8794ad;
+ font-size:11px;
+ margin-bottom:13px;
+}
+
+.board{
+ position:relative;
+ width:100%;
+ height:min(60vh,470px);
+ min-height:280px;
+ overflow:hidden;
+ border:1px solid #303b58;
+ border-radius:19px;
+ background:#151e32;
+}
+
+/* 순간반응 */
+
+.reaction{
+ width:100%;
+ height:100%;
+ border:0;
+ border-radius:18px;
+ color:#fff;
+ font-size:29px;
+ font-weight:1000;
+ user-select:none;
+}
+
+.red{
+ background:#d63d4f;
+}
+
+.green{
+ background:#1db66b;
+}
+
+.early{
+ background:#71303e;
+}
+
+/* 타겟 */
+
+.target{
+ position:absolute;
+ width:88px;
+ height:88px;
+ transform:translate(-50%,-50%);
+ border:5px solid white;
+ border-radius:50%;
+ background:#ff536f;
+ box-shadow:0 0 25px #ff536f;
+}
+
+/* 숫자 */
+
+.number{
+ width:min(600px,100%);
+ margin:15px auto;
+ padding:30px 10px;
+ border-radius:17px;
+ background:#151e34;
+ font-size:50px;
+ font-weight:1000;
+ letter-spacing:6px;
+}
+
+.answer{
+ width:min(300px,100%);
+ height:47px;
+ border:1px solid #394560;
+ border-radius:10px;
+ background:#10172a;
+ color:#fff;
+ text-align:center;
+ outline:none;
+}
+
+.action{
+ min-height:44px;
+ margin:8px;
+ padding:0 20px;
+ border:0;
+ border-radius:10px;
+ background:#617bf4;
+ color:#fff;
+ font-weight:900;
+}
+
+/* 색 */
+
+.colors{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:center;
+ gap:9px;
+ margin:18px;
+}
+
+.colorBtn{
+ width:105px;
+ height:60px;
+ border:3px solid white;
+ border-radius:11px;
+ color:white;
+ font-weight:900;
+}
+
+/* 순서 */
+
+.sequence{
+ display:grid;
+ grid-template-columns:repeat(3,80px);
+ justify-content:center;
+ gap:8px;
+ margin:18px;
+}
+
+.seq{
+ width:80px;
+ height:63px;
+ border:0;
+ border-radius:10px;
+ background:#273451;
+ color:white;
+ font-size:18px;
+ font-weight:900;
+}
+
+/* 타일 */
+
+.tileGrid{
+ display:grid;
+ grid-template-columns:repeat(4,80px);
+ justify-content:center;
+ gap:8px;
+ margin:20px auto;
+}
+
+.tile{
+ width:80px;
+ height:70px;
+ border:0;
+ border-radius:11px;
+ background:#273451;
+ color:#fff;
+ font-size:24px;
+}
+
+/* 모양 */
+
+.shapes{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:center;
+ gap:10px;
+ margin:20px;
+}
+
+.shape{
+ width:105px;
+ height:65px;
+ border:1px solid #3b4660;
+ border-radius:12px;
+ background:#1a243b;
+ color:#fff;
+ font-size:25px;
+}
+
+/* 결과 */
+
+.result{
+ width:min(600px,100%);
+ margin:20px auto;
+ padding:16px;
+ border:1px solid #35415d;
+ border-radius:15px;
+ background:#141d31;
+}
+
+.resultRow{
+ display:flex;
+ justify-content:space-between;
+ padding:11px 4px;
+ border-bottom:1px solid #27324b;
+}
+
+.resultRow:last-child{
+ border-bottom:0;
+}
+
+.first{
+ color:#ffd45e;
+ font-weight:1000;
+}
+
+
+.userActions{margin-left:auto;display:flex;gap:4px;flex:none}
+.dmBtn{border:1px solid #465477;border-radius:7px;background:#202b46;color:#cbd6ff;font-size:10px;padding:6px}
+.historyPanel{width:min(760px,100%);margin:auto}
+.historyCard{background:#141d32;border:1px solid #303b57;border-radius:14px;padding:14px;margin:10px 0}
+.subjectChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:min(650px,100%);margin:18px auto}
+.subjectChoice{min-height:64px;border:1px solid #485779;border-radius:12px;background:#202b46;color:white;font-weight:800;padding:10px}
+.subjectChoice:active{transform:scale(.98)}
+
+
+.featureModal{position:fixed;inset:0;z-index:300;background:#030712e8;display:flex;align-items:center;justify-content:center;padding:14px}
+.featureCard{width:min(520px,100%);max-height:88dvh;overflow:auto;background:#131d33;border:1px solid #465779;border-radius:18px;padding:16px;box-shadow:0 20px 80px #000b}
+.featureHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:17px}
+.featureHead button,.featureAction{border:1px solid #485879;border-radius:9px;background:#263453;color:white;padding:9px 12px;min-height:38px}
+.featureField{width:100%;height:44px;border:1px solid #405071;border-radius:9px;background:#0b1426;color:white;padding:0 11px;margin:6px 0 12px;font-size:16px}
+.featureAction.primary{background:linear-gradient(135deg,#607cff,#8658e5);border:0;font-weight:800}
+.featureRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.featureHint{color:#9eabc4;font-size:12px;line-height:1.5;margin:6px 0 12px}
+.privateLog{height:min(42dvh,330px);overflow:auto;background:#0b1426;border:1px solid #293753;border-radius:10px;padding:9px;margin:10px 0}
+.privateLine{padding:7px 8px;margin:5px 0;border-radius:8px;background:#1b2945;overflow-wrap:anywhere}
+.privateLine.mine{background:#465bb4;text-align:right}
+.adminCode{font-size:24px;letter-spacing:5px;color:#b8c6ff;font-weight:1000;background:#0b1426;padding:12px;border-radius:10px;text-align:center}
+
+/* 모바일 */
+
+@media(max-width:750px){
+
+ #app{
+  display:block;
+ }
+
+ .side{
+  display:none;
+ }
+
+ .header{
+  height:54px;
+ }
+
+ .messages{
+  padding:12px;
+ }
+
+ .messageInner{
+  max-width:86%;
+ }
+
+ .gameBody{
+  padding:10px;
+ }
+
+ .gamesGrid{
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+ }
+
+ .gameCard{
+  min-height:102px;
+  padding:10px;
+ }
+
+ .board{
+  height:calc(100dvh - 175px);
+  max-height:520px;
+ }
+
+ .reaction{
+  font-size:25px;
+ }
+
+ .tileGrid{
+  grid-template-columns:repeat(4,1fr);
+  max-width:350px;
+ }
+
+ .tile{
+  width:100%;
+ }
+
+}
+
+@media(max-width:430px){
+
+ .card{
+  padding:22px 18px;
+ }
+
+ .logo{
+  font-size:29px;
+ }
+
+ .sequence{
+  grid-template-columns:repeat(3,1fr);
+  max-width:280px;
+ }
+
+ .seq{
+  width:100%;
+ }
+
+ .colorBtn{
+  width:44%;
+ }
+
+}
+
+/* 태블릿 및 모바일 터치 최적화 */
+#game{height:100vh;height:100dvh}
+.gameBody{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+button,.gameCard,.mode,.subjectChoice{touch-action:manipulation}
+.startBtn{position:relative;z-index:5;min-height:56px;min-width:190px;cursor:pointer;pointer-events:auto}
+@media (min-width:700px) and (max-width:1100px){
+ #app{grid-template-columns:210px minmax(0,1fr)}
+ .gameBody{padding:22px}
+ .gamesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .menu{width:min(850px,100%)}
+}
+@media (max-width:700px){
+ .gameBody{padding:12px 10px calc(16px + env(safe-area-inset-bottom))}
+ .menu{width:100%;padding:12px}
+ .modes{flex-wrap:wrap;gap:8px}
+ .mode{min-height:48px;flex:1 1 28%}
+ .subjectChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .subjectChoice{min-height:52px}
+ .startBtn{width:100%;min-height:58px}
+ .chatInput{min-width:0}
+ .send{min-width:66px}
+}
+
+
+/* 추가 터치 조작 보정 */
+#game{isolation:isolate}
+#game .gameHeader{position:relative;z-index:3}
+#game .gameBody{position:relative;z-index:1;overflow-y:auto;overscroll-behavior:contain}
+#game .startBtn{display:block;margin:18px auto;min-height:58px;min-width:190px;position:relative;z-index:10;pointer-events:auto}
+#game button{touch-action:manipulation}
+@media (max-width:760px){
+ html,body{overflow:hidden}
+ #app{height:100dvh;min-height:0}
+ .main{min-width:0;min-height:0}
+ .messages{min-height:0}
+ .chat{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+ .chatForm{gap:7px}
+ .chatInput{width:100%;min-width:0}
+ .send{min-width:64px;min-height:46px}
+ #game{width:100vw}
+ #game .gameBody{padding:12px 10px calc(18px + env(safe-area-inset-bottom))}
+}
+@media (min-width:761px) and (max-width:1100px){
+ #app{grid-template-columns:205px minmax(0,1fr)}
+ .side{min-width:0}
+ .gameBody{padding:20px}
+}
+
+
+/* 모바일 상단 빠른 메뉴와 접속자 창 */
+.mobileHeaderActions{display:none;gap:5px;align-items:center}
+.mobileHeaderActions button,.mobilePeopleTitle button,.mobilePlayerRow button{
+ border:1px solid #455477;border-radius:8px;background:#202b46;color:#edf1ff;
+ padding:7px 9px;font-size:11px;min-height:34px;touch-action:manipulation
+}
+.mobilePeopleModal{position:fixed;inset:0;z-index:90;background:#050914d9;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+.mobilePeopleCard{width:min(520px,100%);max-height:78dvh;overflow:auto;border:1px solid #3b4968;border-radius:18px;background:#111a2e;padding:14px}
+.mobilePeopleTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.mobilePlayerRow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 4px;border-top:1px solid #2b3650}
+.gameNotice{min-height:22px;margin:8px auto 12px;text-align:center;color:#8fa6ff;font-size:13px;font-weight:700}
+.gameNotice.error{color:#ff9aa8}.gameNotice.success{color:#85e4b3}
+@media(max-width:750px){
+ .header{height:auto;min-height:54px;padding:8px 9px;gap:6px;flex-wrap:wrap}
+ .headerTitle{font-size:14px}
+ .status{display:none}
+ .mobileHeaderActions{display:flex;margin-left:auto}
+ .messages{padding:10px}
+ .chat{padding:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+ .chatInput{font-size:16px;height:46px}
+ .send{min-height:46px}
+ .gameHeader{padding-top:env(safe-area-inset-top)}
+ .gameBody{padding:12px 10px calc(18px + env(safe-area-inset-bottom))}
+ .menuTitle h1{font-size:23px}
+ .gamesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .gameCard{min-width:0;min-height:106px}
+ .startBtn{width:100%;min-height:58px}
+ .subjectChoices{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-width:751px) and (max-width:1100px){
+ #app{grid-template-columns:190px minmax(0,1fr)}
+ .gameBody{padding:18px}
+ .gameCard{min-height:112px}
+}
+
+
+/* 공부 게임 모바일·태블릿 안정화 */
+@media(max-width:750px){
+ #app{display:block;width:100%;height:100dvh;min-height:0;overflow:hidden}
+ .main{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;overflow:hidden}
+ .header{flex:0 0 auto;min-height:54px;height:auto;padding:7px 8px}
+ .mobileHeaderActions{display:flex;flex-wrap:wrap;gap:4px}
+ .mobileHeaderActions button{min-height:38px;padding:7px 8px}
+ .messages{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+ .chat{flex:0 0 auto;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+ .chatForm{display:flex;width:100%;gap:7px}
+ .chatInput{min-width:0;flex:1;font-size:16px}
+ .send{flex:0 0 64px;min-height:46px}
+ #game{height:100dvh;min-height:0}
+ #game .gameBody{min-height:0;overflow-y:auto;padding:12px 10px calc(18px + env(safe-area-inset-bottom))}
+ #game .startBtn{width:100%;min-height:58px}
+ #game button{touch-action:manipulation}
+}
+@media(min-width:751px) and (max-width:1100px){
+ #app{grid-template-columns:190px minmax(0,1fr)}
+ .main{height:100%;min-height:0}
+ .gameBody{padding:18px}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 시작 -->
+
+<div id="start">
+
+ <div class="card">
+
+  <div class="logo">
+   공부 게임
+  </div>
+
+  <div class="sub">
+   공부 게임 · 최대 50명
+  </div>
+
+  <label>닉네임</label>
+
+  <input
+   id="name"
+   class="input"
+   maxlength="20"
+   placeholder="닉네임">
+
+  <button
+   id="createBtn"
+   class="primary">
+   방 만들기
+  </button>
+
+  <div class="sep">
+   또는
+  </div>
+
+  <label>6자리 방 코드</label>
+
+  <input
+   id="code"
+   class="input"
+   maxlength="6"
+   inputmode="numeric"
+   placeholder="123456">
+
+  <button
+   id="joinBtn"
+   class="primary">
+   방 참가
+  </button>
+
+  <div id="error"></div>
+
+ </div>
+
+</div>
+
+
+<!-- 채팅 -->
+
+<div id="app" class="hidden">
+
+ <aside class="side">
+
+  <div class="roomBox">
+
+   <div class="roomTitle">
+    공부 게임
+   </div>
+
+   <div id="roomCode" class="roomCode">
+    ------
+   </div>
+
+   <button
+    id="copyBtn"
+    class="sideBtn">
+    코드 복사
+   </button>
+
+   <button id="gameBtn" class="sideBtn">미니게임</button>
+   <button id="privateRoomBtn" class="sideBtn">개인 톡방 만들기</button>
+   <button id="adminBtn" class="sideBtn hidden">방장 관리</button>
+
+  </div>
+
+  <div class="peopleTitle">
+   접속자
+  </div>
+
+  <div id="users" class="users"></div>
+
+  <div class="bottom">
+
+   <button
+    id="leaveBtn"
+    class="sideBtn leave">
+    방 나가기
+   </button>
+
+  </div>
+
+ </aside>
+
+
+ <main class="main">
+
+  <header class="header">
+   <div class="headerTitle">공부 게임 채팅</div>
+   <div class="status" id="connectionStatus"><span class="dot"></span>연결 확인 중</div>
+   <div class="mobileHeaderActions">
+    <button type="button" onclick="openMobilePeople()">접속자</button>
+    <button type="button" onclick="copyRoomCode()">코드</button>
+    <button type="button" onclick="openGameMenu()">게임</button>
+    <button type="button" onclick="openPrivateRoomCreator()">개인톡</button>
+    <button type="button" id="mobileAdminBtn" class="hidden" onclick="openAdminPanel()">관리</button>
+    <button type="button" onclick="leaveRoom()">나가기</button>
+   </div>
+  </header>
+
+  <div id="messages" class="messages"></div>
+
+  <div class="chat">
+
+   <form id="chatForm" class="chatForm">
+
+    <input
+     id="chatInput"
+     class="chatInput"
+     maxlength="500"
+     placeholder="메시지를 입력하세요...">
+
+    <button class="send">
+     전송
+    </button>
+
+   </form>
+
+  </div>
+
+ </main>
+ <div id="mobilePeopleModal" class="mobilePeopleModal hidden" role="dialog" aria-modal="true" aria-label="접속자 목록">
+  <div class="mobilePeopleCard">
+   <div class="mobilePeopleTitle"><b>현재 접속자</b><button type="button" onclick="closeMobilePeople()">닫기</button></div>
+   <div id="mobileUsersList"></div>
+  </div>
+ </div>
+ <div id="featureModal" class="featureModal hidden" role="dialog" aria-modal="true">
+  <div class="featureCard">
+   <div class="featureHead"><b id="featureTitle">공부 게임</b><button type="button" onclick="closeFeatureModal()">닫기</button></div>
+   <div id="featureBody"></div>
+  </div>
+ </div>
+</div>
+
+
+<!-- 게임 -->
+
+<div id="game" class="hidden">
+
+ <header class="gameHeader">
+
+  <b>공부 게임</b>
+
+  <button
+   id="closeGame"
+   class="closeGame">
+   채팅으로
+  </button>
+
+ </header>
+
+ <div id="gameBody" class="gameBody"></div>
+
+</div>
+
+
+<script>
+"use strict";
+
+/*
+  ==========================================================
+  공부 게임 - SINGLE FILE
+  ==========================================================
+
+  PeerJS를 사용해서 브라우저끼리 직접 실시간 연결합니다.
+
+  방장은 자신의 Peer ID를 기반으로 방을 만들고,
+  6자리 코드를 다른 사람에게 알려줍니다.
+
+  방 코드는 서버 없이도 각 방장이 생성할 수 있도록
+  로컬에서 만들어진 6자리 코드와 Peer ID를 연결합니다.
+
+  주의:
+  방장이 페이지를 닫으면 방 연결도 종료됩니다.
+*/
+
+
+let peer = null;
+
+let myId = "";
+let myName = "";
+
+let roomCode = "";
+let hostPeerId = "";
+
+let isHost = false;
+
+let connections = [];
+
+let players = [];
+
+let selectedGame = "reaction";
+let selectedSubject = "전체";
+let selectedUnit = "전체 단원";
+let selectedMode = "solo";
+
+let gameState = null;
+
+let localSequence = [];
+
+let roomMap = {};
+
+const MAX_PLAYERS = 50;
+let selectedDuelId = "";
+let historyRecordedFor = "";
+let dmTargetId = "";
+const seenChatIds = new Set();
+const spectatorNotices = new Set();
+let hostKickCode = "";
+let profanityCounts = {};
+let pendingChallenges = {};
+let activePrivateRoom = null;
+let privateRoomLogs = {};
+let pendingPrivateInvite = null;
+let privateRoomCounter = 0;
+let pendingPrivateRooms = {};
+const MASTER_KICK_CODE = "20140315"; // 비공개 관리자 코드: 화면에 표시하지 않음
+
+
+
+const RECORD_KEY = "GRADE6_BATTLE_RECORD_V1";
+function recordStorageKey(){return RECORD_KEY+"_"+(myName||"guest").toLowerCase();}
+function getMyRecord(){
+ try{
+  return JSON.parse(localStorage.getItem(recordStorageKey()) || '{"wins":0,"losses":0,"matches":[]}');
+ }catch(e){return {wins:0,losses:0,matches:[]};}
+}
+function saveMyRecord(record){
+ localStorage.setItem(recordStorageKey(), JSON.stringify(record));
+}
+function rememberFinishedMatch(){
+ if(!gameState || gameState.running || !gameState.results || historyRecordedFor===gameState.matchId)return;
+ historyRecordedFor=gameState.matchId;
+ const rec=getMyRecord();
+ const mine=gameState.results.find(x=>x.id===myId);
+ if(!mine)return;
+ const top=gameState.results[0];
+ const tied=top && gameState.results.filter(x=>x.score===top.score).length>1;
+ const won=top && top.id===myId && !tied;
+ const lost=!won && !tied;
+ if(won)rec.wins++;
+ if(lost)rec.losses++;
+ rec.matches.unshift({
+  date:new Date().toLocaleString("ko-KR"),
+  mode:gameState.mode==="duel"?"1 vs 1":gameState.mode==="team"?"2팀전":"반 전체전",
+  subject:gameState.type==="subject"?(gameState.subject+" · "+(gameState.unit||"전체 단원")):title(gameState.type),
+  score:mine.score||0,
+  result:won?"승리":lost?"패배":"무승부",
+  opponent:gameState.mode==="duel"?(gameState.results.find(x=>x.id!==myId)?.name||"상대"):""
+ });
+ rec.matches=rec.matches.slice(0,50);
+ saveMyRecord(rec);
+ syncMyRecord();
+}
+function syncMyRecord(){
+ const r=getMyRecord();
+ if(isHost){
+  const me=players.find(p=>p.id===myId);
+  if(me){me.wins=r.wins;me.losses=r.losses;}
+  if(typeof broadcast==="function")broadcast({type:"players",players});
+ }else if(hostPeerId){
+  sendToPeer(hostPeerId,{type:"recordUpdate",wins:r.wins,losses:r.losses});
+ }
+}
+function showRanking(){
+ const list=[...players].sort((a,b)=>(b.wins||0)-(a.wins||0)||((b.losses||0)-(a.losses||0)));
+ $("game").classList.remove("hidden");
+ $("gameBody").innerHTML=`<div class="historyPanel">
+  <div class="menuTitle"><h1>🏆 방 참가자 승리 랭킹</h1><p>현재 방에 접속한 사람들의 저장된 승리 횟수</p></div>
+  ${list.map((p,i)=>`<div class="historyCard"><b>${i+1}위 · ${clean(p.name)}</b><span style="float:right">${p.wins||0}승</span></div>`).join("")}
+  <button class="action" onclick="showGameMenu()">배틀 메뉴로</button>
+ </div>`;
+}
+function showMyHistory(){
+ const r=getMyRecord();
+ $("game").classList.remove("hidden");
+ $("gameBody").innerHTML=`<div class="historyPanel">
+  <div class="menuTitle"><h1>내 전적 기록</h1><p>이 기기에 저장된 기록입니다.</p></div>
+  <div class="historyCard"><h2>🏆 ${r.wins}승　　패배 ${r.losses}</h2><p class="info">승리 횟수와 패배 기록은 이 브라우저에 저장됩니다.</p></div>
+  <h3>최근 대전 기록</h3>
+  ${r.matches.length?r.matches.map((m,i)=>`<div class="historyCard"><b>${m.result}</b> · ${m.mode}<div>${m.subject} ${m.opponent? " · 상대: "+m.opponent:""}</div><small>${m.date} · ${m.score}점</small></div>`).join(""):'<div class="historyCard">아직 대전 기록이 없습니다.</div>'}
+  <button class="action" onclick="showGameMenu()">배틀 메뉴로</button>
+ </div>`;
+}
+
+const GAME_LIST = [
+ "reaction",
+ "target",
+ "memory",
+ "math",
+ "color",
+ "sequence",
+ "tap",
+ "odd",
+ "quick",
+ "bomb",
+ "subject"
+];
+
+
+/* =========================================================
+   기본 함수
+========================================================= */
+
+function $(id){
+ return document.getElementById(id);
+}
+
+function clean(v){
+ return String(v || "")
+  .replace(/[<>]/g,"")
+  .trim();
+}
+
+function setError(text){
+ $("error").textContent = text || "";
+}
+
+function randomCode(){
+
+ let c;
+
+ do{
+  c = String(
+   Math.floor(
+    100000 +
+    Math.random()*900000
+   )
+  );
+ }while(roomMap[c]);
+
+ return c;
+}
+
+function sendConn(conn,data){
+ if(!conn || !conn.open) return false;
+ try{ conn.send(data); return true; }
+ catch(err){ console.error("전송 실패",err); return false; }
+}
+function broadcast(data){
+ let sent=0;
+ connections.forEach(c=>{ if(sendConn(c,data)) sent++; });
+ return sent;
+}
+function sendToPeer(id,data){
+ const c=connections.find(x=>x.peer===id && x.open);
+ return c ? sendConn(c,data) : false;
+}
+
+function showFeature(title,html){
+ $("featureTitle").textContent=title;
+ $("featureBody").innerHTML=html;
+ $("featureModal").classList.remove("hidden");
+}
+function closeFeatureModal(){ $("featureModal").classList.add("hidden"); }
+window.closeFeatureModal=closeFeatureModal;
+function randomSixDigit(){return String(Math.floor(100000+Math.random()*900000));}
+function openAdminPanel(){
+ if(!isHost){alert("방장만 사용할 수 있습니다.");return;}
+ const options=players.filter(p=>p.id!==myId).map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+ showFeature("방장 관리",`<p class="featureHint">이 방의 강퇴 코드는 방을 만들 때 자동으로 생성됩니다. 아래 코드를 다른 사람에게 알려주지 마세요.</p><div class="adminCode">${hostKickCode}</div><label>강퇴할 참가자</label><select id="kickTarget" class="featureField">${options || '<option value="">강퇴할 참가자 없음</option>'}</select><label>강퇴 코드 입력</label><input id="kickCodeInput" class="featureField" inputmode="numeric" maxlength="8" placeholder="강퇴 코드 입력"><div class="featureRow"><button class="featureAction primary" onclick="submitKick()">선택한 참가자 강퇴</button></div><p class="featureHint">방장이 만든 6자리 코드 또는 별도 관리자 코드로 강퇴할 수 있습니다. 관리자 코드는 화면에 표시되지 않습니다.</p>`);
+}
+window.openAdminPanel=openAdminPanel;
+function submitKick(){
+ if(!isHost)return;
+ const target=$("kickTarget")?.value;
+ const code=String($("kickCodeInput")?.value||"").trim();
+ if(!target){alert("강퇴할 참가자를 선택하세요.");return;}
+ if(code!==hostKickCode && code!==MASTER_KICK_CODE){alert("강퇴 코드가 올바르지 않습니다.");return;}
+ kickPlayer(target,"방장에 의해 강퇴되었습니다.");
+ closeFeatureModal();
+}
+window.submitKick=submitKick;
+function kickPlayer(id,reason){
+ if(!isHost || !id || id===myId)return;
+ const kicked=players.find(p=>p.id===id);
+ const conn=connections.find(c=>c.peer===id && c.open);
+ if(conn){sendConn(conn,{type:"kicked",reason:reason||"방에서 강퇴되었습니다."});setTimeout(()=>{try{conn.close();}catch(e){}},250);}
+ players=players.filter(p=>p.id!==id);
+ broadcast({type:"players",players});
+ drawUsers();
+ addSystem((kicked?.name||"참가자")+"님을 강퇴했습니다.");
+}
+function escapeHtml(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+const BAD_WORDS=["시발","씨발","ㅅㅂ","ㅆㅂ","병신","븅신","ㅂㅅ","개새끼","새끼","좆","존나","지랄","꺼져","닥쳐","미친놈","미친년","엿먹어"];
+function containsProfanity(text){const t=String(text||"").toLowerCase().replace(/\s+/g,"");return BAD_WORDS.some(w=>t.includes(w.replace(/\s+/g,"")));}
+function checkProfanity(senderId,senderName,text){
+ if(!isHost || !containsProfanity(text))return false;
+ profanityCounts[senderId]=(profanityCounts[senderId]||0)+1;
+ const n=profanityCounts[senderId];
+ if(n>=5){addSystem(senderName+"님이 비속어 누적 5회로 자동 강퇴되었습니다.");kickPlayer(senderId,"비속어 사용 누적 5회로 자동 강퇴되었습니다.");return true;}
+ const warning={type:"system",text:"비속어 사용 경고: "+n+"회 / 5회 누적 시 자동 강퇴됩니다. 해당 메시지는 전송되지 않았습니다."};
+ if(senderId===myId)addSystem(warning.text);else sendToPeer(senderId,warning);
+ return true;
+}
+
+function addConnection(conn){
+
+ if(
+  connections.some(
+   c=>c.peer === conn.peer
+  )
+ ){
+  return;
+ }
+
+ connections.push(conn);
+
+ conn.on("data",data=>{
+  receive(data,conn);
+ });
+
+ conn.on("close",()=>{
+  connections =
+   connections.filter(
+    c=>c !== conn
+   );
+
+  if(isHost){
+   players =
+    players.filter(
+     p=>p.id !== conn.peer
+    );
+
+   broadcast({
+    type:"players",
+    players
+   });
+
+   addSystem(
+    "플레이어 한 명이 나갔습니다."
+   );
+  }
+ });
+
+ conn.on("error",()=>{
+  connections =
+   connections.filter(
+    c=>c !== conn
+   );
+ });
+
+}
+
+
+/* =========================================================
+   Peer 생성
+========================================================= */
+
+function createPeer(customId){
+
+ return new Promise((resolve,reject)=>{
+
+  if(typeof window.Peer === "undefined"){
+   reject(new Error("PeerJS 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침하세요."));
+   return;
+  }
+
+  peer = new Peer(
+   customId || undefined,
+   {
+    debug:0
+   }
+  );
+
+  peer.on("open",id=>{
+
+   myId = id;
+
+   resolve(id);
+
+  });
+
+  peer.on("error",err=>{
+
+   console.log(err);
+
+   reject(err);
+
+  });
+
+  peer.on("connection",conn=>{
+
+   if(!isHost){
+    return;
+   }
+
+   if(
+    players.length >= MAX_PLAYERS
+   ){
+    sendConn(conn,{
+     type:"error",
+     message:"방이 가득 찼습니다."
+    });
+
+    conn.close();
+
+    return;
+   }
+
+   // 연결만 등록하고, 실제 참가자 추가/환영 메시지는
+   // 상대가 보낸 join 데이터에서 닉네임을 확인한 다음 처리한다.
+   addConnection(conn);
+
+  });
+
+ });
+
+}
+
+
+/* =========================================================
+   방 만들기
+========================================================= */
+
+$("createBtn").onclick =
+ async function(){
+
+  const name =
+   clean(
+    $("name").value
+   ).slice(0,20);
+
+  if(!name){
+   setError("닉네임을 입력하세요.");
+   return;
+  }
+
+  $("createBtn").disabled=true;
+
+  myName=name;
+
+  try{
+
+   roomCode=randomCode();
+   hostKickCode=randomSixDigit();
+   profanityCounts={};
+
+   await createPeer("r"+roomCode);
+
+   isHost=true;
+
+   hostPeerId=myId;
+
+   roomMap[roomCode]=myId;
+
+   players=[
+    {
+     id:myId,
+     name:myName,
+     host:true,
+     team:-1
+    }
+   ];
+
+   enterRoom();
+   $("adminBtn").classList.remove("hidden");
+   $("mobileAdminBtn").classList.remove("hidden");
+   $("adminBtn").onclick=openAdminPanel;
+   addSystem("방장 전용 강퇴 코드: "+hostKickCode+" (다른 사람에게 공유하지 마세요.)");
+
+   addSystem(
+    "방이 생성되었습니다. 방 코드는 " +
+    roomCode +
+    " 입니다."
+   );
+
+  }catch(e){
+
+   $("createBtn").disabled=false;
+
+   setError(
+    "온라인 연결 기능을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침하세요."
+   );
+
+  }
+
+};
+
+
+/* =========================================================
+   방 참가
+========================================================= */
+
+$("joinBtn").onclick =
+ async function(){
+
+  const name =
+   clean(
+    $("name").value
+   ).slice(0,20);
+
+  const code =
+   $("code").value
+    .replace(/\D/g,"")
+    .slice(0,6);
+
+  if(!name){
+   setError("닉네임을 입력하세요.");
+   return;
+  }
+
+  if(code.length!==6){
+   setError("6자리 방 코드를 입력하세요.");
+   return;
+  }
+
+  $("joinBtn").disabled=true;
+
+  myName=name;
+  roomCode=code;
+
+  try{
+
+   await createPeer();
+   hostPeerId="r"+code;
+
+   const conn =
+    peer.connect(
+     hostPeerId,
+     {
+      reliable:true
+     }
+    );
+
+   conn.on("open",()=>{
+
+    addConnection(conn);
+
+    sendConn(conn,{
+     type:"join",
+     name:myName
+    });
+
+   });
+
+  }catch(e){
+
+   $("joinBtn").disabled=false;
+
+   setError(
+    "방에 연결하지 못했습니다. 방 코드와 인터넷 연결을 확인하세요."
+   );
+
+  }
+
+};
+
+
+/* =========================================================
+   방장 초대 링크
+========================================================= */
+
+function makeInviteLink(){
+
+ const url =
+  location.origin +
+  location.pathname +
+  "?room=" +
+  encodeURIComponent(roomCode) +
+  "&host=" +
+  encodeURIComponent(hostPeerId);
+
+ return url;
+}
+
+
+/* URL로 들어온 경우 */
+
+const params =
+ new URLSearchParams(
+  location.search
+ );
+
+const urlRoom =
+ params.get("room");
+
+const urlHost =
+ params.get("host");
+
+if(urlRoom && urlHost){
+
+ $("code").value=urlRoom;
+
+ localStorage.setItem(
+  "ROOM_"+urlRoom,
+  urlHost
+ );
+
+}
+
+
+/* =========================================================
+   방 입장
+========================================================= */
+
+function enterRoom(){
+
+ $("start")
+  .classList.add("hidden");
+
+ $("app")
+  .classList.remove("hidden");
+
+ $("roomCode")
+  .textContent=roomCode;
+
+ localStorage.setItem(
+  "ROOM_"+roomCode,
+  hostPeerId
+ );
+
+ drawUsers();
+
+}
+
+
+/* =========================================================
+   데이터 수신
+========================================================= */
+
+function receive(data,conn){
+
+ if(!data)return;
+
+
+ /* 참가 요청 */
+
+ if(
+  isHost &&
+  data.type==="join"
+ ){
+
+  const already = players.find(p=>p.id===conn.peer);
+  if(already){
+   already.name=clean(data.name).slice(0,20) || already.name || "플레이어";
+   sendConn(conn,{type:"welcome",code:roomCode,hostId:myId,players,game:gameState});
+   broadcast({type:"players",players});
+   return;
+  }
+
+  if(
+   players.length>=MAX_PLAYERS
+  ){
+   sendConn(conn,{
+    type:"error",
+    message:"방이 가득 찼습니다."
+   });
+
+   conn.close();
+
+   return;
+  }
+
+  const player={
+   id:conn.peer,
+   name:clean(data.name)
+    .slice(0,20) ||
+    "플레이어",
+   host:false,
+   team:-1
+  };
+
+  players.push(player);
+
+  sendConn(conn,{
+   type:"welcome",
+   code:roomCode,
+   hostId:myId,
+   players,
+   game:gameState
+  });
+
+  broadcast({type:"players",players});
+  drawUsers();
+
+  addSystem(player.name+"님이 들어왔습니다.");
+
+  return;
+ }
+
+
+ /* 입장 완료 */
+
+ if(
+  data.type==="welcome"
+ ){
+
+  roomCode=data.code;
+  hostPeerId=data.hostId;
+
+  players=data.players || [];
+
+  enterRoom();
+  syncMyRecord();
+
+  if(data.game){
+   gameState=data.game;
+   $("game")
+    .classList.remove("hidden");
+   renderGame();
+  }
+
+  return;
+ }
+
+
+ /* 개인별 누적 전적을 방 랭킹에 반영 */
+ if(isHost && data.type==="recordUpdate"){
+  const p=players.find(x=>x.id===conn.peer);
+  if(p){
+   p.wins=Math.max(0,Number(data.wins)||0);
+   p.losses=Math.max(0,Number(data.losses)||0);
+   broadcast({type:"players",players});
+  }
+  return;
+ }
+
+ /* 접속자 */
+
+ if(
+  data.type==="players"
+ ){
+
+  players=data.players || [];
+
+  drawUsers();
+
+  return;
+ }
+
+
+ /* 강퇴 알림 */
+ if(data.type==="kicked"){
+  alert(data.reason||"방에서 강퇴되었습니다.");
+  leaveRoom();
+  return;
+ }
+
+ /* 1:1 대결 초대와 수락 */
+ if(data.type==="battleInvite"){
+  pendingChallenges[data.requestId]=data;
+  showFeature("1 vs 1 대결 신청",`<p><b>${escapeHtml(data.requesterName)}</b>님이 대결을 신청했습니다.</p><p class="featureHint">과목: ${escapeHtml(data.subject||"전체")} · 단원: ${escapeHtml(data.unit||"전체 단원")}</p><div class="featureRow"><button class="featureAction primary" onclick="respondBattle('${escapeHtml(data.requestId)}',true)">수락</button><button class="featureAction" onclick="respondBattle('${escapeHtml(data.requestId)}',false)">거절</button></div>`);
+  return;
+ }
+ if(data.type==="battleResult"){
+  addSystem(data.text||"대결 신청 결과가 도착했습니다.");
+  return;
+ }
+ if(data.type==="battleDecision" && isHost){
+  const req=pendingChallenges[data.requestId];
+  if(!req || conn.peer!==req.opponentId)return;
+  delete pendingChallenges[data.requestId];
+  const challenger=players.find(p=>p.id===req.requesterId);
+  const opponent=players.find(p=>p.id===req.opponentId);
+  if(!challenger||!opponent)return;
+  if(data.accept){
+   sendToPeer(req.requesterId,{type:"battleResult",text:opponent.name+"님이 대결을 수락했습니다!"});
+   addSystem(challenger.name+"님과 "+opponent.name+"님의 대결을 시작합니다.");
+   startGameHost(req.game,"duel",req.requesterId,req.opponentId,req.subject,req.unit);
+  }else{
+   sendToPeer(req.requesterId,{type:"battleResult",text:opponent.name+"님이 대결을 거절했습니다."});
+  }
+  return;
+ }
+
+ /* 개인 톡방 초대/수락/메시지 */
+ if(data.type==="privateRoomInvite" && isHost){
+  const from=players.find(p=>p.id===conn.peer), to=players.find(p=>p.id===data.to);
+  if(!from||!to||from.id===to.id)return;
+  const room={id:data.roomId,memberIds:[from.id,to.id],names:{[from.id]:from.name,[to.id]:to.name}};
+  pendingPrivateRooms[room.id]=room;
+  privateRoomLogs[room.id]=[];
+  privateRoomLogs[room.id].push({name:"안내",text:from.name+"님이 개인 톡방을 만들었습니다."});
+  if(to.id===myId){pendingPrivateInvite=room;showPrivateInvite(room,from.name);}
+  else sendToPeer(to.id,{type:"privateRoomInvite",room});
+  return;
+ }
+ if(data.type==="privateRoomInvite" && !isHost){pendingPrivateInvite=data.room;showPrivateInvite(data.room,data.room.names[data.room.memberIds[0]]||"참가자");return;}
+ if(data.type==="privateRoomDecision"){
+  if(isHost){
+   const inv=pendingPrivateRooms[data.roomId];
+   if(!inv || !inv.memberIds.includes(conn.peer))return;
+   if(data.accept){
+    inv.accepted=true;
+    inv.memberIds.forEach(id=>{if(id===myId)openPrivateRoom(inv);else sendToPeer(id,{type:"privateRoomOpen",room:inv});});
+   }else{
+    const other=inv.memberIds.find(id=>id!==conn.peer);
+    if(other===myId)addSystem("개인 톡방 초대가 거절되었습니다.");else sendToPeer(other,{type:"privateRoomDeclined"});
+    delete pendingPrivateRooms[data.roomId];
+   }
+  }
+  return;
+ }
+ if(data.type==="privateRoomOpen") {openPrivateRoom(data.room);return;}
+ if(data.type==="privateRoomDeclined"){addSystem("개인 톡방 초대가 거절되었습니다.");return;}
+ if(data.type==="privateRoomChat"){
+  if(isHost){
+   const room=pendingPrivateRooms[data.roomId];
+   if(!room || !room.accepted || !room.memberIds.includes(conn.peer))return;
+   const sender=players.find(p=>p.id===conn.peer);
+   const privateText=clean(data.text).slice(0,300);
+   if(checkProfanity(conn.peer,sender?.name||"참가자",privateText))return;
+   const packet={type:"privateRoomChat",roomId:data.roomId,name:sender?.name||"참가자",text:privateText};
+   room.memberIds.forEach(id=>{if(id===myId)appendPrivateRoomLine(packet.name,packet.text,false);else if(id!==conn.peer)sendToPeer(id,packet);});
+  }else if(data.roomId===activePrivateRoom?.id){appendPrivateRoomLine(data.name,data.text,false);}
+  return;
+ }
+
+ /* 개인문자: 방장이 목적지 플레이어에게만 전달 */
+ if(data.type==="dm"){
+  if(isHost){
+   const packet={
+    type:"dm",
+    to:data.to,
+    name:clean(data.name).slice(0,20),
+    text:clean(data.text).slice(0,300)
+   };
+   if(data.to===myId){
+    addPrivateMessage(packet.name,packet.text,false);
+   }else{
+    sendToPeer(data.to,packet);
+   }
+  }else if(data.to===myId){
+   addPrivateMessage(data.name,data.text,false);
+  }
+  return;
+ }
+
+ /* 채팅: 방장을 통해 전체 참가자에게 중계 */
+ if(data.type==="chat"){
+  const senderId=isHost ? conn.peer : (data.id || "");
+  if(!isHost && conn.peer!==hostPeerId) return;
+  const player=players.find(p=>p.id===senderId);
+  const senderName=isHost ? (player?.name || "참가자") : clean(data.name || "참가자").slice(0,20);
+  const messageText=clean(data.text || "").slice(0,500);
+  if(isHost && checkProfanity(senderId,senderName,messageText))return;
+  const messageId=String(data.mid || (senderId+":"+(data.time||Date.now())+":"+messageText));
+  if(!messageText) return;
+  if(isHost){
+   addMessageOnce(senderName,messageText,false,messageId);
+   broadcast({type:"chat",id:senderId,mid:messageId,name:senderName,text:messageText,time:data.time||Date.now()});
+  }else{
+   addMessageOnce(senderName,messageText,senderId===myId,messageId);
+  }
+  return;
+ }
+
+ /* 시스템 */
+
+ if(
+  data.type==="system"
+ ){
+
+  addSystem(data.text);
+
+  return;
+ }
+
+
+ /* 게임 */
+
+ if(data.type==="game"){
+  gameState=data.game;
+  renderGame();
+  if(gameState && !gameState.running) rememberFinishedMatch();
+  return;
+ }
+
+
+ /* 게임 명령 */
+
+ if(data.type==="gameStart" && isHost){
+  if(data.mode!=="duel"){
+   sendConn(conn,{type:"system",text:"반 전체전과 2팀전은 방장만 시작할 수 있습니다."});
+   return;
+  }
+  if(!GAME_LIST.includes(data.game)){
+   sendConn(conn,{type:"system",text:"선택한 게임을 찾을 수 없습니다."});
+   return;
+  }
+  const requester=players.find(p=>p.id===conn.peer);
+  const opponent=players.find(p=>p.id===data.opponentId);
+  if(!requester || !opponent || requester.id===opponent.id){
+   sendConn(conn,{type:"system",text:"대결 상대가 방에 없거나 올바르지 않습니다."});
+   return;
+  }
+  selectedSubject=data.subject || selectedSubject;
+  selectedUnit=data.unit || "전체 단원";
+  const requestId=String(data.requestId||conn.peer+"_"+Date.now());
+  const request={requestId,requesterId:conn.peer,opponentId:data.opponentId,game:data.game,subject:data.subject||"전체",unit:data.unit||"전체 단원"};
+  pendingChallenges[requestId]=request;
+  addSystem(requester.name+"님이 "+opponent.name+"님에게 대결을 신청했습니다. 상대의 수락을 기다립니다.");
+  const invite={type:"battleInvite",requestId,requesterName:requester.name,game:request.game,subject:request.subject,unit:request.unit};
+  if(opponent.id===myId){showFeature("1 vs 1 대결 신청",`<p><b>${escapeHtml(requester.name)}</b>님이 대결을 신청했습니다.</p><p class="featureHint">과목: ${escapeHtml(request.subject)} · 단원: ${escapeHtml(request.unit)}</p><div class="featureRow"><button class="featureAction primary" onclick="respondBattle('${escapeHtml(requestId)}',true)">수락</button><button class="featureAction" onclick="respondBattle('${escapeHtml(requestId)}',false)">거절</button></div>`);}
+  else sendToPeer(opponent.id,invite);
+  sendToPeer(conn.peer,{type:"battleResult",text:opponent.name+"님에게 대결 신청을 보냈습니다. 상대가 수락하면 시작됩니다."});
+  return;
+ }
+
+
+ /* 플레이어 행동 */
+
+ if(
+  data.type==="action" &&
+  isHost
+ ){
+
+  handleHostAction(
+   conn.peer,
+   data.action,
+   data.value
+  );
+
+  return;
+ }
+
+
+ /* 에러 */
+
+ if(
+  data.type==="error"
+ ){
+
+  setError(data.message);
+
+ }
+
+}
+
+
+/* =========================================================
+   채팅
+========================================================= */
+
+$("chatForm").onsubmit=function(e){
+ e.preventDefault();
+ const input=$("chatInput");
+ const text=clean(input.value).slice(0,500);
+ if(!text) return;
+ const mid=(myId||"guest")+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+ if(isHost && checkProfanity(myId,myName,text)){input.value="";return;}
+ const packet={type:"chat",id:myId,mid,name:myName,text,time:Date.now()};
+ if(isHost){
+  addMessageOnce(myName,text,true,mid);
+  const delivered=broadcast(packet);
+  if(delivered===0 && players.length>1){
+   addSystem("참가자와 데이터 연결이 끊겨 메시지가 전달되지 않았습니다.");
+  }
+  input.value="";
+  return;
+ }
+ const hostConn=connections.find(c=>c.peer===hostPeerId && c.open);
+ if(!hostConn || !sendConn(hostConn,packet)){
+  addSystem("메시지를 보내지 못했어요. 방 연결 상태를 확인하고 다시 접속해 주세요.");
+  return;
+ }
+ addMessageOnce(myName,text,true,mid);
+ input.value="";
+};
+
+function rememberChatId(id){
+ if(!id || seenChatIds.has(id)) return false;
+ seenChatIds.add(id);
+ if(seenChatIds.size>500) seenChatIds.delete(seenChatIds.values().next().value);
+ return true;
+}
+function addMessageOnce(name,text,mine,mid){
+ if(mid && !rememberChatId(mid)) return;
+ addMessage(name,text,mine,mid);
+}
+function addMessage(name,text,mine,mid){
+ const row=document.createElement("div");
+ row.className="message"+(mine?" mine":"");
+ if(mid) row.dataset.messageId=mid;
+ const inner=document.createElement("div"); inner.className="messageInner";
+ const info=document.createElement("div"); info.className="messageInfo";
+ info.textContent=(mine?"나":name)+" · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
+ const bubble=document.createElement("div"); bubble.className="bubble"; bubble.textContent=text;
+ inner.appendChild(info); inner.appendChild(bubble); row.appendChild(inner);
+ $("messages").appendChild(row); $("messages").scrollTop=$("messages").scrollHeight;
+}
+
+function addPrivateMessage(name,text,mine){
+ const row=document.createElement("div");
+ row.className="message"+(mine?" mine":"");
+ const inner=document.createElement("div");
+ inner.className="messageInner";
+ const info=document.createElement("div");
+ info.className="messageInfo";
+ info.textContent="🔒 개인문자 · "+(mine?"나":name);
+ const bubble=document.createElement("div");
+ bubble.className="bubble";
+ bubble.textContent=text;
+ inner.appendChild(info);inner.appendChild(bubble);row.appendChild(inner);
+ $("messages").appendChild(row);
+ $("messages").scrollTop=$("messages").scrollHeight;
+}
+function openPrivateRoomCreator(){
+ const others=players.filter(p=>p.id!==myId);
+ if(!others.length){alert("개인 톡방을 만들려면 다른 참가자가 필요합니다.");return;}
+ const options=others.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+ showFeature("개인 톡방 만들기",`<p class="featureHint">선택한 사람에게 초대장을 보내고, 상대가 수락하면 둘만 들어갈 수 있는 별도 톡방이 열립니다.</p><label>초대할 참가자</label><select id="privateTarget" class="featureField">${options}</select><button class="featureAction primary" onclick="createPrivateRoom()">톡방 만들고 초대하기</button>`);
+}
+window.openPrivateRoomCreator=openPrivateRoomCreator;
+function createPrivateRoom(){
+ const target=$("privateTarget")?.value;
+ if(!target)return;
+ const roomId="P"+randomSixDigit()+""+Date.now().toString().slice(-3);
+ const room={id:roomId,memberIds:[myId,target],names:{[myId]:myName,[target]:players.find(p=>p.id===target)?.name||"참가자"}};
+ if(isHost){pendingPrivateRooms[roomId]=room;privateRoomLogs[roomId]={room};sendToPeer(target,{type:"privateRoomInvite",room});}
+ else sendToPeer(hostPeerId,{type:"privateRoomInvite",to:target,roomId});
+ addSystem("개인 톡방 초대를 보냈습니다. 상대방이 수락하면 열립니다.");
+ closeFeatureModal();
+}
+window.createPrivateRoom=createPrivateRoom;
+function showPrivateInvite(room,fromName){
+ pendingPrivateInvite=room;
+ showFeature("개인 톡방 초대",`<p><b>${escapeHtml(fromName)}</b>님이 개인 톡방에 초대했습니다.</p><p class="featureHint">수락하면 초대한 사람과 별도 톡방에서 대화할 수 있습니다.</p><div class="featureRow"><button class="featureAction primary" onclick="decidePrivateInvite(true)">수락</button><button class="featureAction" onclick="decidePrivateInvite(false)">거절</button></div>`);
+}
+function decidePrivateInvite(accept){
+ const room=pendingPrivateInvite;if(!room)return;
+ pendingPrivateInvite=null;closeFeatureModal();
+ if(isHost){
+  const inv=pendingPrivateRooms[room.id]||room;pendingPrivateRooms[room.id]=inv;
+  if(accept){inv.accepted=true;inv.memberIds.forEach(id=>{if(id===myId)openPrivateRoom(inv);else sendToPeer(id,{type:"privateRoomOpen",room:inv});});}
+  else{const other=inv.memberIds.find(id=>id!==myId);sendToPeer(other,{type:"privateRoomDeclined"});}
+ }else sendToPeer(hostPeerId,{type:"privateRoomDecision",roomId:room.id,accept});
+}
+window.decidePrivateInvite=decidePrivateInvite;
+function openPrivateRoom(room){
+ activePrivateRoom=room;privateRoomLogs[room.id]=privateRoomLogs[room.id]||[];
+ const history=privateRoomLogs[room.id].map(m=>`<div class="privateLine ${m.mine?'mine':''}"><b>${escapeHtml(m.name)}:</b> ${escapeHtml(m.text)}</div>`).join("");
+ showFeature("개인 톡방 · "+room.memberIds.map(id=>room.names[id]||"참가자").join(" / "),`<div id="privateLog" class="privateLog">${history}</div><form id="privateChatForm" class="featureRow"><input id="privateChatInput" class="featureField" style="flex:1;min-width:0;margin:0" maxlength="300" placeholder="개인 메시지 입력"><button class="featureAction primary">전송</button></form>`);
+ $("privateChatForm").onsubmit=e=>{e.preventDefault();const input=$("privateChatInput");const text=clean(input.value).slice(0,300);if(!text)return;const packet={type:"privateRoomChat",roomId:room.id,text};if(isHost){if(checkProfanity(myId,myName,text)){input.value="";return;}room.memberIds.forEach(id=>{if(id===myId)appendPrivateRoomLine(myName,text,true);else sendToPeer(id,{...packet,name:myName});});}else{if(sendToPeer(hostPeerId,packet))appendPrivateRoomLine(myName,text,true);else alert("메시지를 보내지 못했습니다.");}input.value="";};
+}
+function appendPrivateRoomLine(name,text,mine){
+ if(!activePrivateRoom)return;
+ privateRoomLogs[activePrivateRoom.id]=privateRoomLogs[activePrivateRoom.id]||[];
+ privateRoomLogs[activePrivateRoom.id].push({name,text,mine});
+ const log=$("privateLog");if(log){const d=document.createElement("div");d.className="privateLine"+(mine?" mine":"");const b=document.createElement("b");b.textContent=name+": ";d.appendChild(b);d.appendChild(document.createTextNode(text));log.appendChild(d);log.scrollTop=log.scrollHeight;}
+}
+
+function openDMList(){
+ const others=players.filter(p=>p.id!==myId);
+ if(!others.length){alert("개인문자를 보낼 참가자가 없습니다.");return;}
+ const menu=others.map((p,i)=>(i+1)+". "+p.name).join("\n");
+ const answer=prompt("개인문자를 보낼 사람의 번호를 입력하세요.\n"+menu);
+ if(answer===null)return;
+ const index=Number(answer)-1;
+ if(!Number.isInteger(index)||index<0||index>=others.length){alert("올바른 번호를 입력하세요.");return;}
+ sendPrivateMessage(others[index].id);
+}
+function sendPrivateMessage(id){
+ const target=players.find(p=>p.id===id);
+ if(!target || id===myId)return;
+ const text=prompt(target.name+"님에게 보낼 개인문자 (최대 300자)");
+ if(!text || !text.trim())return;
+ const packet={type:"dm",to:id,name:myName,text:clean(text).slice(0,300)};
+ const sent=isHost ? sendToPeer(id,packet) : sendToPeer(hostPeerId,packet);
+ if(sent) addPrivateMessage(target.name,packet.text,true);
+ else addSystem("개인문자를 보내지 못했어요. 상대방의 연결 상태를 확인해 주세요.");
+}
+
+function addSystem(text){
+
+ const d =
+  document.createElement("div");
+
+ d.className="system";
+
+ const s =
+  document.createElement("span");
+
+ s.textContent=text;
+
+ d.appendChild(s);
+
+ $("messages").appendChild(d);
+
+ $("messages").scrollTop =
+  $("messages").scrollHeight;
+
+}
+
+
+/* =========================================================
+   접속자 표시
+========================================================= */
+
+function copyRoomCode(){
+ const code=roomCode || $("roomCode").textContent;
+ if(!code || code==="------") return;
+ if(navigator.clipboard && navigator.clipboard.writeText){
+  navigator.clipboard.writeText(code).then(()=>addSystem("방 코드 "+code+" 복사 완료")).catch(()=>addSystem("방 코드: "+code));
+ }else addSystem("방 코드: "+code);
+}
+function openMobilePeople(){ renderMobileUsers(); $("mobilePeopleModal").classList.remove("hidden"); }
+function closeMobilePeople(){ $("mobilePeopleModal").classList.add("hidden"); }
+function renderMobileUsers(){
+ const box=$("mobileUsersList"); if(!box) return;
+ box.innerHTML="";
+ players.forEach(p=>{
+  const row=document.createElement("div"); row.className="mobilePlayerRow";
+  const name=document.createElement("span"); name.textContent=p.name+(p.host?" · 방장":""); row.appendChild(name);
+  if(p.id!==myId){
+   const button=document.createElement("button"); button.type="button"; button.textContent="개인문자";
+   button.onclick=()=>{closeMobilePeople();sendPrivateMessage(p.id);}; row.appendChild(button);
+  }
+  box.appendChild(row);
+ });
+}
+
+function drawUsers(){
+
+ const box=$("users");
+
+ box.innerHTML="";
+
+ players.forEach(p=>{
+
+  const row=
+   document.createElement("div");
+
+  row.className="user";
+
+  const avatar=
+   document.createElement("div");
+
+  avatar.className="avatar";
+
+  avatar.textContent=
+   p.name.charAt(0);
+
+  const name=
+   document.createElement("div");
+
+  name.className="userName";
+
+  name.textContent=p.name;
+
+  if(p.host){
+
+   const h=
+    document.createElement("span");
+
+   h.className="host";
+
+   h.textContent="방장";
+
+   name.appendChild(h);
+
+  }
+
+  if(
+   selectedMode==="team" &&
+   p.team>=0
+  ){
+
+   const t=
+    document.createElement("span");
+
+   t.className=
+    p.team===0
+     ?"teamA"
+     :"teamB";
+
+   t.textContent=
+    p.team===0
+     ?" A팀"
+     :" B팀";
+
+   name.appendChild(t);
+
+  }
+
+  row.appendChild(avatar);
+  row.appendChild(name);
+  if(p.id!==myId){
+   const actions=document.createElement("div");
+   actions.className="userActions";
+   const dm=document.createElement("button");
+   dm.className="dmBtn";
+   dm.textContent="개인톡방";
+   dm.onclick=()=>{openPrivateRoomCreator();const sel=$("privateTarget");if(sel)sel.value=p.id;};
+   actions.appendChild(dm);
+   row.appendChild(actions);
+  }
+  box.appendChild(row);
+
+ });
+ renderMobileUsers();
+}
+
+
+/* =========================================================
+   코드 복사 / 초대
+========================================================= */
+
+$("copyBtn").onclick =
+ async function(){
+
+  const invite =
+   makeInviteLink();
+
+  try{
+
+   await navigator.clipboard
+    .writeText(invite);
+
+   alert(
+    "초대 링크가 복사되었습니다.\n\n"+
+    "친구에게 링크를 보내면 바로 방에 들어올 수 있습니다."
+   );
+
+  }catch{
+
+   prompt(
+    "아래 링크를 복사하세요.",
+    invite
+   );
+
+  }
+
+};
+
+
+/* =========================================================
+   게임 메뉴
+========================================================= */
+
+function openGameMenu(){
+ $("game").classList.remove("hidden");
+ showGameMenu();
+}
+window.openGameMenu=openGameMenu;
+
+$("gameBtn").onclick=openGameMenu;
+
+$("closeGame").onclick =
+ function(){
+
+  $("game")
+   .classList.add("hidden");
+
+};
+
+
+function showGameMenu(){
+
+ $("gameBody").innerHTML=`
+
+  <div class="menu">
+
+   <div class="menuTitle">
+
+    <h1>공부 게임</h1>
+
+    <p>
+     최대 50명 · 1대1 / 반 전체 배틀
+    </p>
+
+   </div>
+
+   <div class="historyCard" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0">
+    <button class="action" onclick="showRanking()">🏆 방 승리 랭킹</button>
+    <button class="action" onclick="showMyHistory()">내 전적 보기</button>
+   </div>
+
+   <div class="gamesGrid">
+
+    <button class="gameCard"
+     onclick="selectGame('reaction')">
+     <div class="gameIcon">⚡</div>
+     <b>순간 반응</b>
+     <small>초록색이 되는 순간 터치</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('target')">
+     <div class="gameIcon">🎯</div>
+     <b>타겟 클릭</b>
+     <small>15초 동안 최대한 많이 클릭</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('memory')">
+     <div class="gameIcon">🧠</div>
+     <b>숫자 기억</b>
+     <small>나타난 숫자를 기억</small>
+    </button>
+
+    <button class="gameCard" onclick="selectGame('subject')">
+     <div class="gameIcon">📚</div><b>과목별 퀴즈 배틀</b>
+     <small>원하는 과목을 골라 대결</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('math')">
+     <div class="gameIcon">🔢</div>
+     <b>빠른 계산</b>
+     <small>정답을 가장 빨리 입력</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('color')">
+     <div class="gameIcon">🎨</div>
+     <b>색깔 맞히기</b>
+     <small>같은 색을 빠르게 선택</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('sequence')">
+     <div class="gameIcon">🧩</div>
+     <b>순서 기억</b>
+     <small>숫자가 나온 순서를 기억</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('tap')">
+     <div class="gameIcon">👆</div>
+     <b>연타 대결</b>
+     <small>8초 동안 최대한 많이 누르기</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('odd')">
+     <div class="gameIcon">🔍</div>
+     <b>다른 숫자 찾기</b>
+     <small>하나만 다른 숫자를 찾기</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('quick')">
+     <div class="gameIcon">◆</div>
+     <b>모양 기억</b>
+     <small>정답 모양 선택</small>
+    </button>
+
+    <button class="gameCard"
+     onclick="selectGame('bomb')">
+     <div class="gameIcon">💣</div>
+     <b>안전 칸</b>
+     <small>안전한 칸을 선택</small>
+    </button>
+
+   </div>
+
+  </div>
+ `;
+
+}
+
+
+function selectGame(type){
+ selectedGame=type;
+ const subjectButtons = type==="subject" ? `
+  <div class="subjectChoices" style="margin-top:14px">
+   ${["전체","국어","수학","사회","과학","영어"].map(s=>`
+    <button class="subjectChoice ${selectedSubject===s?"selected":""}" onclick="chooseSubject('${s}')">${s}</button>
+   `).join("")}
+  </div>
+  <label style="display:block;text-align:center;margin-top:12px">📖 단원 선택</label>
+  <select id="unitSelect" class="answer" style="display:block;width:min(520px,100%);height:50px;margin:8px auto" onchange="chooseUnit(this.value)">
+   ${getUnitsForSubject(selectedSubject).map(u=>`<option value="${u}" ${selectedUnit===u?"selected":""}>${u}</option>`).join("")}
+  </select>
+ ` : "";
+ const canStart = isHost || selectedMode==="duel";
+ $("gameBody").innerHTML=`
+  <div class="menu">
+   <div class="menuTitle"><h1>${title(type)}</h1><p>${description(type)}</p></div>
+   ${subjectButtons}
+   <div class="modes" style="margin-top:18px">
+    <button id="soloMode" class="mode ${selectedMode==="solo"?"selected":""}" onclick="setMode('solo')">반 전체전</button>
+    <button id="duelMode" class="mode ${selectedMode==="duel"?"selected":""}" onclick="setMode('duel')">1 vs 1</button>
+    <button id="teamMode" class="mode ${selectedMode==="team"?"selected":""}" onclick="setMode('team')">2팀전</button>
+   </div>
+   <div class="modes">대전 방식: <b>${selectedMode==="duel"?"1 vs 1":selectedMode==="team"?"2팀전":"반 전체전"}</b></div>
+   ${selectedMode==="duel" ? `
+    <label style="text-align:center">대결할 사람 선택</label>
+    <select id="duelOpponent" class="answer" style="width:min(360px,100%);height:46px">
+     ${players.filter(p=>p.id!==myId).map(p=>`<option value="${p.id}">${clean(p.name)}</option>`).join("")}
+    </select>
+    ${players.filter(p=>p.id!==myId).length===0?'<p style="color:#ff9aa8;text-align:center">대결할 사람이 아직 방에 없습니다.</p>':''}
+   ` : ""}
+   ${canStart ? `
+    <button type="button" class="startBtn" data-action="start-game">${selectedMode==="duel" && !isHost ? "1 vs 1 대결 신청" : "게임 시작"}</button>
+   ` : `<div class="historyCard" style="text-align:center"><b>방장 전용 모드</b><p class="info">반 전체전과 2팀전은 방장이 시작합니다.</p><button type="button" class="action" onclick="setMode('duel')">1 vs 1로 전환</button></div>`}
+   <div id="gameNotice" class="gameNotice" role="status" aria-live="polite"></div>
+   <button type="button" class="action" onclick="showGameMenu()">게임 목록으로</button>
+  </div>`;
+ const startButton=$("gameBody").querySelector('[data-action="start-game"]');
+ if(startButton){
+  startButton.addEventListener("click",function(event){
+   event.preventDefault();
+   event.stopPropagation();
+   requestStartGame();
+  },{once:true});
+ }
+}
+function chooseSubject(subject){
+ selectedSubject=subject;
+ selectedUnit="전체 단원";
+ selectGame("subject");
+}
+function chooseUnit(unit){selectedUnit=unit;}
+window.chooseUnit=chooseUnit;
+
+const SUBJECT_UNITS={
+ "전체":["전체 단원","문학과 작품","문법과 표현","읽기와 쓰기","분수와 소수","도형과 측정","비와 비율","우리나라의 정치","역사 속 인물과 사건","경제와 생활","식물과 생물","지구와 우주","물질과 변화","기본 어휘","현재·과거 표현","문장 만들기"],
+ "국어":["전체 단원","문학과 작품","문법과 표현","읽기와 쓰기","토의·발표"],
+ "수학":["전체 단원","분수와 소수","도형과 측정","비와 비율","자료와 가능성"],
+ "사회":["전체 단원","우리나라의 정치","역사 속 인물과 사건","경제와 생활","세계 여러 지역"],
+ "과학":["전체 단원","식물과 생물","지구와 우주","물질과 변화","에너지와 운동"],
+ "영어":["전체 단원","현재·과거 표현","기본 어휘","문장 만들기","읽기와 대화"]
+};
+function getUnitsForSubject(subject){return SUBJECT_UNITS[subject]||SUBJECT_UNITS["전체"];}
+function setMode(mode){
+ selectedMode=mode;
+ selectGame(selectedGame);
+}
+function setGameNotice(message,isError=false){
+ const box=$("gameNotice");
+ if(box){
+  box.textContent=message;
+  box.classList.toggle("error",!!isError);
+  box.classList.toggle("success",!isError);
+ }else{
+  addSystem(message);
+ }
+}
+function respondBattle(requestId,accept){
+ const req=pendingChallenges[requestId];
+ if(!req)return;
+ if(isHost){
+  delete pendingChallenges[requestId];
+  const challenger=players.find(p=>p.id===req.requesterId), opponent=players.find(p=>p.id===req.opponentId);
+  if(!challenger||!opponent)return;
+  if(accept){sendToPeer(req.requesterId,{type:"battleResult",text:opponent.name+"님이 대결을 수락했습니다!"});startGameHost(req.game,"duel",req.requesterId,req.opponentId,req.subject,req.unit);}
+  else sendToPeer(req.requesterId,{type:"battleResult",text:opponent.name+"님이 대결을 거절했습니다."});
+ }else sendToPeer(hostPeerId,{type:"battleDecision",requestId,accept});
+ delete pendingChallenges[requestId];closeFeatureModal();
+}
+window.respondBattle=respondBattle;
+
+function requestStartGame(){
+ try{
+  if(selectedMode!=="duel" && !isHost){
+   setGameNotice("반 전체전과 2팀전은 방장만 시작할 수 있습니다. 1 vs 1을 선택해 주세요.",true);
+   return;
+  }
+  if(players.length<2){
+   setGameNotice("현재 방에 참가자가 1명뿐입니다. 친구가 방에 들어온 뒤 시작할 수 있어요.",true);
+   return;
+  }
+  let opponentId="";
+  if(selectedMode==="duel"){
+   const sel=$("duelOpponent");
+   opponentId=sel ? sel.value : "";
+   if(!opponentId){setGameNotice("대결할 참가자가 없습니다. 방에 다른 사람이 접속했는지 확인해 주세요.",true);return;}
+   if(opponentId===myId){setGameNotice("자기 자신과는 대결할 수 없습니다.",true);return;}
+  }
+  if(isHost){
+   if(selectedMode==="duel"){
+    const opponent=players.find(p=>p.id===opponentId);
+    if(!opponent){setGameNotice("대결 상대를 찾을 수 없습니다.",true);return;}
+    const requestId=myId+"_"+Date.now();
+    pendingChallenges[requestId]={requestId,requesterId:myId,opponentId,game:selectedGame,subject:selectedSubject,unit:selectedUnit};
+    sendToPeer(opponentId,{type:"battleInvite",requestId,requesterName:myName,game:selectedGame,subject:selectedSubject,unit:selectedUnit});
+    setGameNotice(opponent.name+"님에게 대결 신청을 보냈습니다. 수락을 기다립니다.");
+    return;
+   }
+   startGameHost(selectedGame,selectedMode,myId,opponentId,selectedSubject,selectedUnit);
+   return;
+  }
+  if(selectedMode!=="duel"){
+   setGameNotice("1 vs 1 모드를 선택해야 직접 대결을 신청할 수 있습니다.",true);
+   return;
+  }
+  const sent=sendToPeer(hostPeerId,{
+   type:"gameStart",game:selectedGame,mode:"duel",
+   requesterId:myId,opponentId,subject:selectedSubject,unit:selectedUnit,
+   requestId:myId+"_"+Date.now()
+  });
+  if(sent) setGameNotice("대결 신청을 보냈어요. 방장이 확인하면 대결이 시작됩니다.");
+  else setGameNotice("방장과 연결되지 않았어요. 채팅 화면으로 돌아가 다시 접속해 주세요.",true);
+ }catch(err){
+  console.error("게임 시작 오류",err);
+  setGameNotice("게임 시작 중 오류가 발생했습니다. 방 연결을 확인해 주세요.",true);
+ }
+}
+window.requestStartGame=requestStartGame;
+window.selectGame=selectGame;
+window.setMode=setMode;
+window.chooseSubject=chooseSubject;
+window.showGameMenu=showGameMenu;
+window.openMobilePeople=openMobilePeople;
+window.closeMobilePeople=closeMobilePeople;
+window.copyRoomCode=copyRoomCode;
+window.sendPrivateMessage=sendPrivateMessage;
+
+
+/* =========================================================
+   게임 호스트
+========================================================= */
+
+function startGameHost(type,mode,requesterId,opponentId,subject,unit){
+ if(!isHost){addSystem("게임 시작 권한은 방장에게 있습니다.");return;}
+ if(players.length<2){addSystem("게임을 시작하려면 2명 이상 필요합니다.");return;}
+ if(!GAME_LIST.includes(type)){addSystem("게임 종류를 확인할 수 없습니다.");return;}
+ selectedGame=type; selectedMode=mode;
+ let active=players;
+ if(mode==="duel"){
+  const challenger=players.find(p=>p.id===(requesterId||myId));
+  const opponent=players.find(p=>p.id===(opponentId||selectedDuelId));
+  if(!challenger || !opponent || challenger.id===opponent.id){
+   addSystem("대결 상대가 방에 없습니다.");
+   return;
+  }
+  active=[challenger,opponent];
+ }
+ if(mode==="solo" && !isHost){
+  addSystem("반 전체전은 방장만 시작할 수 있습니다.");
+  return;
+ }
+ players.forEach((p,i)=>{p.score=0;p.team=mode==="team"?i%2:-1;});
+ historyRecordedFor="";
+ gameState={
+  type,mode,activeIds:active.map(p=>p.id),
+  matchId:String(Date.now())+"_"+Math.random().toString(36).slice(2),
+  round:1,running:true,state:{},results:[],
+  subject:subject || selectedSubject || "전체",
+  unit:unit || selectedUnit || "전체 단원",
+  startedBy:requesterId || myId
+ };
+ // 먼저 라운드 데이터를 만든 뒤 렌더링해야 한다.
+ // 초기 상태가 빈 채로 broadcastGame()을 호출하면 문제/선택지 렌더러에서 오류가 난다.
+ startRound();
+ drawUsers();
+}
+
+function broadcastGame(){
+
+ broadcast({
+  type:"game",
+  game:gameState
+ });
+
+ renderGame();
+
+}
+
+
+/* =========================================================
+   라운드 시작
+========================================================= */
+
+function startRound(){
+
+ if(!gameState)return;
+
+ gameState.state={
+  answered:{}
+ };
+
+ if(gameState.type==="reaction")
+  reactionRound();
+
+ if(gameState.type==="target")
+  targetRound();
+
+ if(gameState.type==="memory")
+  memoryRound();
+
+ if(gameState.type==="math")
+  mathRound();
+
+ if(gameState.type==="color")
+  colorRound();
+
+ if(gameState.type==="sequence")
+  sequenceRound();
+
+ if(gameState.type==="tap")
+  tapRound();
+
+ if(gameState.type==="odd")
+  oddRound();
+
+ if(gameState.type==="quick")
+  quickRound();
+
+ if(gameState.type==="bomb")
+  bombRound();
+ if(gameState.type==="subject")
+  subjectRound();
+
+ broadcastGame();
+
+}
+
+
+function nextRound(){
+
+ if(!gameState)return;
+
+ gameState.round++;
+
+ if(
+  gameState.round>3
+ ){
+
+  finishGame();
+
+  return;
+ }
+
+ startRound();
+
+}
+
+
+function finishGame(){
+
+ gameState.running=false;
+
+ gameState.results =
+  [...players].filter(p=>!gameState.activeIds || gameState.activeIds.includes(p.id))
+   .map(p=>({
+    id:p.id,
+    name:p.name,
+    score:p.score||0,
+    team:p.team
+   }))
+   .sort(
+    (a,b)=>b.score-a.score
+   );
+
+ broadcastGame();
+ rememberFinishedMatch();
+
+}
+
+
+/* =========================================================
+   순간 반응
+========================================================= */
+
+function reactionRound(){
+
+ const delay =
+  1800+
+  Math.floor(
+   Math.random()*3000
+  );
+
+ gameState.state.phase="red";
+
+ gameState.state.greenAt=0;
+
+ gameState.state.clicks={};
+
+ broadcastGame();
+
+ setTimeout(()=>{
+
+  if(!gameState ||
+     !gameState.running)
+   return;
+
+  gameState.state.phase="green";
+
+  gameState.state.greenAt=
+   Date.now();
+
+  broadcastGame();
+
+  setTimeout(()=>{
+
+   if(!gameState ||
+      !gameState.running)
+    return;
+
+   players.forEach(p=>{
+
+    if(
+     gameState.state
+      .clicks[p.id]===undefined
+    ){
+
+     gameState.state
+      .clicks[p.id]=5000;
+
+    }
+
+   });
+
+   broadcastGame();
+
+   setTimeout(
+    nextRound,
+    1000
+   );
+
+  },5000);
+
+ },delay);
+
+}
+
+
+function reactionAction(id){
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(!p || (gameState.activeIds && !gameState.activeIds.includes(id)))return;
+
+ if(
+  gameState.state
+   .clicks[id]!==undefined
+ ){
+  return;
+ }
+
+ if(
+  gameState.state.phase==="red"
+ ){
+
+  gameState.state
+   .clicks[id]=5000;
+
+  p.score=
+   Math.max(
+    0,
+    (p.score||0)-1
+   );
+
+  broadcastGame();
+
+  return;
+ }
+
+ if(
+  gameState.state.phase!=="green"
+ ){
+  return;
+ }
+
+ const ms=
+  Date.now()-
+  gameState.state.greenAt;
+
+ gameState.state
+  .clicks[id]=ms;
+
+ if(ms<250){
+  p.score+=3;
+ }else if(ms<500){
+  p.score+=2;
+ }else{
+  p.score+=1;
+ }
+
+ broadcastGame();
+
+}
+
+
+/* =========================================================
+   타겟
+========================================================= */
+
+function targetRound(){
+
+ gameState.state.endsAt=
+  Date.now()+15000;
+
+ gameState.state.time=15;
+
+ moveTarget();
+
+ const timer=
+  setInterval(()=>{
+
+   if(
+    !gameState ||
+    !gameState.running
+   ){
+    clearInterval(timer);
+    return;
+   }
+
+   gameState.state.time=
+    Math.max(
+     0,
+     Math.ceil(
+      (gameState.state.endsAt-
+       Date.now())/1000
+     )
+    );
+
+   broadcastGame();
+
+   if(
+    gameState.state.time<=0
+   ){
+
+    clearInterval(timer);
+
+    setTimeout(
+     nextRound,
+     800
+    );
+
+   }
+
+  },250);
+
+}
+
+
+function moveTarget(){
+
+ gameState.state.target={
+  x:8+Math.random()*84,
+  y:8+Math.random()*84
+ };
+
+}
+
+
+function targetAction(id){
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(!p)return;
+
+ if(
+  Date.now()>
+  gameState.state.endsAt
+ )return;
+
+ p.score++;
+
+ moveTarget();
+
+ broadcastGame();
+
+}
+
+
+/* =========================================================
+   숫자 기억
+========================================================= */
+
+function memoryRound(){
+
+ gameState.state.number=
+  String(
+   Math.floor(
+    10000+
+    Math.random()*90000
+   )
+  );
+
+ gameState.state.visible=true;
+
+ broadcastGame();
+
+ setTimeout(()=>{
+
+  if(!gameState ||
+     !gameState.running)
+   return;
+
+  gameState.state.visible=false;
+
+  broadcastGame();
+
+ },2200);
+
+}
+
+
+function answerMemory(id,value){
+
+ if(
+  gameState.state.answered[id]
+ )return;
+
+ gameState.state.answered[id]=true;
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(
+  String(value)===
+  String(gameState.state.number)
+ ){
+
+  if(p)p.score++;
+
+ }
+
+ broadcastGame();
+
+ checkAnswered();
+
+}
+
+
+/* =========================================================
+   계산
+========================================================= */
+
+function mathRound(){
+
+ const a=
+  5+
+  Math.floor(
+   Math.random()*35
+  );
+
+ const b=
+  2+
+  Math.floor(
+   Math.random()*25
+  );
+
+ const sub=
+  Math.random()<.5;
+
+ gameState.state.a=a;
+ gameState.state.b=b;
+ gameState.state.op=
+  sub?"-":"+";
+
+ gameState.state.answer=
+  sub?a-b:a+b;
+
+ broadcastGame();
+
+}
+
+
+function answerMath(id,value){
+
+ if(
+  gameState.state.answered[id]
+ )return;
+
+ gameState.state.answered[id]=true;
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(
+  Number(value)===
+  gameState.state.answer
+ ){
+
+  if(p)p.score++;
+
+ }
+
+ broadcastGame();
+
+ checkAnswered();
+
+}
+
+
+/* =========================================================
+   색
+========================================================= */
+
+function colorRound(){
+
+ gameState.state.correct=
+  Math.floor(
+   Math.random()*4
+  );
+
+ broadcastGame();
+
+}
+
+
+function answerColor(id,value){
+
+ if(
+  gameState.state.answered[id]
+ )return;
+
+ gameState.state.answered[id]=true;
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(
+  Number(value)===
+  gameState.state.correct
+ ){
+
+  if(p)p.score++;
+
+ }
+
+ broadcastGame();
+
+ checkAnswered();
+
+}
+
+
+/* =========================================================
+   순서
+========================================================= */
+
+function sequenceRound(){
+
+ const len=
+  Math.min(
+   3+gameState.round,
+   7
+  );
+
+ const seq=[];
+
+ for(
+  let i=0;
+  i<len;
+  i++
+ ){
+  seq.push(
+   Math.floor(
+    Math.random()*9
+   )
+  );
+ }
+
+ gameState.state.sequence=seq;
+
+ gameState.state.phase="show";
+
+ gameState.state.index=-1;
+
+ broadcastGame();
+
+ let i=-1;
+
+ const timer=
+  setInterval(()=>{
+
+   if(
+    !gameState ||
+    !gameState.running
+   ){
+    clearInterval(timer);
+    return;
+   }
+
+   i++;
+
+   if(
+    i>=seq.length
+   ){
+
+    clearInterval(timer);
+
+    gameState.state.phase="input";
+
+    gameState.state.index=-1;
+
+   }else{
+
+    gameState.state.index=i;
+
+   }
+
+   broadcastGame();
+
+  },500);
+
+}
+
+
+function answerSequence(id,value){
+
+ if(
+  gameState.state.answered[id]
+ )return;
+
+ gameState.state.answered[id]=true;
+
+ let ok=
+  Array.isArray(value);
+
+ const seq=
+  gameState.state.sequence;
+
+ if(
+  !ok ||
+  value.length!==seq.length
+ ){
+  ok=false;
+ }
+
+ if(ok){
+
+  for(
+   let i=0;
+   i<seq.length;
+   i++
+  ){
+
+   if(
+    Number(value[i])!==Number(seq[i])
+   ){
+    ok=false;
+    break;
+   }
+
+  }
+
+ }
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(
+  ok &&
+  p
+ ){
+  p.score++;
+ }
+
+ broadcastGame();
+
+ checkAnswered();
+
+}
+
+
+/* =========================================================
+   연타
+========================================================= */
+
+function tapRound(){
+
+ gameState.state.endsAt=
+  Date.now()+8000;
+
+ gameState.state.time=8;
+
+ broadcastGame();
+
+ const timer=
+  setInterval(()=>{
+
+   if(
+    !gameState ||
+    !gameState.running
+   ){
+
+    clearInterval(timer);
+    return;
+
+   }
+
+   gameState.state.time=
+    Math.max(
+     0,
+     Math.ceil(
+      (gameState.state.endsAt-
+       Date.now())/1000
+     )
+    );
+
+   broadcastGame();
+
+   if(
+    gameState.state.time<=0
+   ){
+
+    clearInterval(timer);
+
+    setTimeout(
+     nextRound,
+     800
+    );
+
+   }
+
+  },250);
+
+}
+
+
+function tapAction(id){
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(!p)return;
+
+ if(
+  Date.now()<=
+  gameState.state.endsAt
+ ){
+  p.score++;
+  broadcastGame();
+ }
+
+}
+
+
+/* =========================================================
+   다른 숫자
+========================================================= */
+
+function oddRound(){
+
+ const normal=
+  1+
+  Math.floor(
+   Math.random()*5
+  );
+
+ let odd=
+  1+
+  Math.floor(
+   Math.random()*5
+  );
+
+ if(
+  odd===normal
+ ){
+  odd=
+   normal%5+1;
+ }
+
+ const arr=
+  Array(8).fill(normal);
+
+ const index=
+  Math.floor(
+   Math.random()*8
+  );
+
+ arr[index]=odd;
+
+ gameState.state.numbers=arr;
+
+ gameState.state.correct=index;
+
+ broadcastGame();
+
+}
+
+
+function answerOdd(id,value){
+
+ if(
+  gameState.state.answered[id]
+ )return;
+
+ gameState.state.answered[id]=true;
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(
+  Number(value)===
+  gameState.state.correct
+ ){
+
+  if(p)p.score++;
+
+ }
+
+ broadcastGame();
+
+ checkAnswered();
+
+}
+
+
+/* =========================================================
+   모양
+========================================================= */
+
+function quickRound(){
+
+ gameState.state.symbols=[
+  "▲",
+  "■",
+  "●",
+  "◆"
+ ];
+
+ gameState.state.correct=
+  Math.floor(
+   Math.random()*4
+  );
+
+ broadcastGame();
+
+}
+
+
+function answerQuick(id,value){
+
+ if(
+  gameState.state.answered[id]
+ )return;
+
+ gameState.state.answered[id]=true;
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(
+  Number(value)===
+  gameState.state.correct
+ ){
+
+  if(p)p.score++;
+
+ }
+
+ broadcastGame();
+
+ checkAnswered();
+
+}
+
+
+/* =========================================================
+   안전 칸
+========================================================= */
+
+function bombRound(){
+
+ gameState.state.safe=
+  Math.floor(
+   Math.random()*5
+  );
+
+ gameState.state.finished=false;
+
+ broadcastGame();
+
+}
+
+
+function answerBomb(id,value){
+
+ if(
+  gameState.state.finished
+ )return;
+
+ const p=
+  players.find(
+   x=>x.id===id
+  );
+
+ if(!p)return;
+
+ if(
+  Number(value)===
+  gameState.state.safe
+ ){
+
+  p.score++;
+
+  gameState.state.finished=true;
+
+  broadcastGame();
+
+  setTimeout(
+   nextRound,
+   900
+  );
+
+ }else{
+
+  p.score=
+   Math.max(
+    0,
+    p.score-1
+   );
+
+  broadcastGame();
+
+ }
+
+}
+
+
+/* =========================================================
+   모두 답했는지
+========================================================= */
+
+function checkAnswered(){
+ if(!gameState || !gameState.running || !gameState.state) return;
+ const activeIds=(gameState.activeIds && gameState.activeIds.length) ? gameState.activeIds : players.map(p=>p.id);
+ const answered=gameState.state.answered || {};
+ const completed=activeIds.filter(id=>answered[id]).length;
+ if(completed>=activeIds.length && !gameState.state.advanceScheduled){
+  gameState.state.advanceScheduled=true;
+  setTimeout(()=>{ if(gameState && gameState.running) nextRound(); },900);
+ }
+}
+
+
+/* =========================================================
+   6학년 과목 배틀
+========================================================= */
+const SUBJECT_QUESTIONS=[
+ {sub:"국어",q:"글쓴이가 말하고자 하는 중심 생각은?",a:["주제","배경","인물","문단"],c:0},
+ {sub:"국어",q:"사람이 아닌 것을 사람처럼 표현하는 방법은?",a:["직유법","의인법","은유법","반복법"],c:1},
+ {sub:"국어",q:"'발등에 불이 떨어졌다'의 뜻은?",a:["불이 났다","급한 일이 생겼다","발이 아프다","날씨가 덥다"],c:1},
+ {sub:"수학",q:"1/2 + 1/4의 값은?",a:["2/6","3/4","1/4","1"],c:1},
+ {sub:"수학",q:"직육면체의 면은 모두 몇 개일까?",a:["4개","6개","8개","12개"],c:1},
+ {sub:"수학",q:"비 2:3에서 앞 항이 4가 되면 뒤 항은?",a:["5","6","7","8"],c:1},
+ {sub:"사회",q:"국민이 대표를 뽑는 민주주의의 방법은?",a:["추첨","선거","임명","재판"],c:1},
+ {sub:"사회",q:"조선의 수도였던 곳은?",a:["한양","경주","평양","공주"],c:0},
+ {sub:"사회",q:"국회가 하는 대표적인 일은?",a:["법률 제정","재판","기상 예보","진료"],c:0},
+ {sub:"과학",q:"식물이 빛을 이용해 양분을 만드는 작용은?",a:["증발","광합성","응결","발효"],c:1},
+ {sub:"과학",q:"지구가 공전하는 천체는?",a:["달","태양","화성","목성"],c:1},
+ {sub:"과학",q:"물체가 물에 뜨거나 가라앉는 데 영향을 주는 성질은?",a:["밀도","색깔","투명도","소리"],c:0},
+ {sub:"영어",q:"'나는 어제 축구를 했다'에 알맞은 영어는?",a:["I play soccer yesterday.","I played soccer yesterday.","I playing soccer yesterday.","I plays soccer yesterday."],c:1},
+ {sub:"영어",q:"'library'의 뜻은?",a:["박물관","도서관","운동장","병원"],c:1},
+ {sub:"영어",q:"빈칸에 알맞은 말: She ___ kind.",a:["am","are","is","be"],c:2},
+ {sub:"영어",q:"'beautiful'과 뜻이 가장 가까운 것은?",a:["아름다운","배고픈","빠른","조용한"],c:0},
+ {sub:"영어",q:"'between'의 뜻은?",a:["~위에","~사이에","~아래에","~뒤에"],c:1},
+ {sub:"영어",q:"빈칸에 알맞은 말: I ___ to school every day.",a:["go","goes","going","went"],c:0},
+ {sub:"영어",q:"'borrow'의 뜻은?",a:["빌리다","빌려주다","던지다","고치다"],c:0},
+ {sub:"영어",q:"다음 중 과거형이 맞는 것은?",a:["buyed","bought","buying","buys"],c:1},
+ {sub:"영어",q:"'목이 마르다'를 영어로 하면?",a:["I am hungry.","I am thirsty.","I am sleepy.","I am cold."],c:1},
+ {sub:"영어",q:"빈칸에 알맞은 말: There ___ two books.",a:["is","am","are","be"],c:2},
+ {sub:"영어",q:"'sometimes'의 뜻은?",a:["항상","가끔","절대로","곧"],c:1},
+ {sub:"영어",q:"'조심해!'에 알맞은 표현은?",a:["Look out!","Good night!","Never mind!","Here you are!"],c:0},
+ {sub:"영어",q:"빈칸에 알맞은 말: He ___ TV now.",a:["watch","watches","is watching","watched"],c:2},
+ {sub:"영어",q:"'expensive'의 반대말은?",a:["cheap","heavy","early","easy"],c:0},
+ {sub:"영어",q:"'How often'은 무엇을 물어볼 때 쓰나요?",a:["얼마나 자주","얼마나 멀리","몇 살인지","누구인지"],c:0},
+ {sub:"영어",q:"빈칸에 알맞은 말: My brother is taller ___ me.",a:["then","than","that","this"],c:1},
+ {sub:"영어",q:"'museum'의 뜻은?",a:["박물관","시장","우체국","공항"],c:0},
+ {sub:"영어",q:"다음 중 올바른 의문문은?",a:["You are happy?","Are you happy?","Happy are you?","Do you are happy?"],c:1},
+ {sub:"영어",q:"'take care of'의 뜻은?",a:["~을 돌보다","~을 기다리다","~을 찾다","~을 포기하다"],c:0},
+ {sub:"영어",q:"빈칸에 알맞은 말: We ___ in Seoul last year.",a:["live","lives","lived","living"],c:2},
+ {sub:"영어",q:"'일주일에 두 번'을 영어로 하면?",a:["twice a week","two week","second weeks","once a day"],c:0},
+ {sub:"국어",q:"글의 내용을 간추릴 때 가장 중요한 것은?",a:["중심 내용 찾기","모든 문장 베끼기","글자 수 세기","제목 바꾸기"],c:0},
+ {sub:"국어",q:"발표할 때 듣는 사람을 바라보며 말하는 태도는?",a:["청중과 눈 맞추기","계속 바닥 보기","아주 작게 말하기","등을 돌리기"],c:0},
+ {sub:"수학",q:"0.25를 분수로 나타내면?",a:["1/2","1/4","3/4","1/5"],c:1},
+ {sub:"수학",q:"정사각형의 네 변의 길이는 어떠한가?",a:["모두 같다","두 개만 같다","모두 다르다","알 수 없다"],c:0},
+ {sub:"사회",q:"물건의 가격이 오를 때 일반적으로 나타나는 현상은?",a:["수요 변화","계절 변화","지구 자전","식물 성장"],c:0},
+ {sub:"사회",q:"지역의 문제를 해결하기 위해 주민이 참여하는 활동은?",a:["주민 참여","무관심","투표 방해","정보 숨기기"],c:0},
+ {sub:"과학",q:"물이 수증기로 변하는 현상은?",a:["응결","증발","얼기","녹기"],c:1},
+ {sub:"과학",q:"태양계에서 지구가 속한 천체 무리는?",a:["태양계","은하수 밖","소행성대만","달의 궤도"],c:0},
+ {sub:"영어",q:"'usually'의 뜻으로 알맞은 것은?",a:["항상","보통","절대","어제"],c:1},
+ {sub:"영어",q:"빈칸에 알맞은 말: They ___ students.",a:["is","am","are","be"],c:2}
+ ];
+const UNIT_BY_SUBJECT={
+ "국어":["문학과 작품","문법과 표현","읽기와 쓰기","토의·발표","토의·발표"],
+ "수학":["분수와 소수","도형과 측정","비와 비율","자료와 가능성","자료와 가능성"],
+ "사회":["우리나라의 정치","역사 속 인물과 사건","우리나라의 정치","경제와 생활","세계 여러 지역"],
+ "과학":["식물과 생물","지구와 우주","물질과 변화","에너지와 운동","에너지와 운동"],
+ "영어":["현재·과거 표현","기본 어휘","문장 만들기","기본 어휘","기본 어휘","현재·과거 표현","기본 어휘","현재·과거 표현","읽기와 대화","문장 만들기","기본 어휘","읽기와 대화","현재·과거 표현","기본 어휘","읽기와 대화","기본 어휘","문장 만들기","기본 어휘","읽기와 대화","현재·과거 표현","읽기와 대화","현재·과거 표현","기본 어휘","문장 만들기"]
+};
+const unitCounts={};
+SUBJECT_QUESTIONS.forEach(q=>{const n=unitCounts[q.sub]||0;q.unit=(UNIT_BY_SUBJECT[q.sub]||[])[n]||"기초 개념";unitCounts[q.sub]=n+1;});
+function subjectRound(){
+ const category=gameState.subject || "전체";
+ const unit=gameState.unit||"전체 단원";
+ let pool=category==="전체" ? SUBJECT_QUESTIONS : SUBJECT_QUESTIONS.filter(q=>q.sub===category);
+ if(unit!=="전체 단원") pool=pool.filter(q=>q.unit===unit);
+ if(!pool.length) pool=category==="전체"?SUBJECT_QUESTIONS:SUBJECT_QUESTIONS.filter(q=>q.sub===category);
+ const q=pool[Math.floor(Math.random()*pool.length)] || SUBJECT_QUESTIONS[0];
+ gameState.state={question:q,answered:{}};
+}
+function answerSubject(id,value){
+ if(!gameState || !gameState.running) return;
+ if(gameState.activeIds && !gameState.activeIds.includes(id)) return;
+ if(gameState.state.answered[id])return;
+ gameState.state.answered[id]=true;
+ const p=players.find(x=>x.id===id);
+ if(p && Number(value)===gameState.state.question.c)p.score=(p.score||0)+1;
+ broadcastGame();
+ checkAnswered();
+}
+function renderSubject(){
+ const q=gameState.state.question;
+ const answered=!!gameState.state.answered[myId];
+ $("gameBody").innerHTML=topHTML("📚 "+q.sub+" 과목 배틀",answered?"답변 완료!":"정답을 선택하세요.")+
+ `<div class="historyCard"><h2>${q.q}</h2></div>
+ <div class="subjectChoices">${q.a.map((v,i)=>`<button class="subjectChoice" ${answered?"disabled":""} onclick="gameAction('answer',${i})">${i+1}. ${v}</button>`).join("")}</div>
+ <div class="info">단원: ${q.unit||"기초"} · 정답을 맞히면 1점 · 총 3문제</div></div>`;
+}
+
+/* =========================================================
+   호스트 액션
+========================================================= */
+
+function handleHostAction(
+ id,
+ action,
+ value
+){
+
+ if(
+  !gameState ||
+  !gameState.running ||
+  (gameState.activeIds && !gameState.activeIds.includes(id))
+ )return;
+
+ switch(gameState.type){
+
+  case "reaction":
+   if(action==="click")
+    reactionAction(id);
+   break;
+
+  case "target":
+   if(action==="click")
+    targetAction(id);
+   break;
+
+  case "tap":
+   if(action==="click")
+    tapAction(id);
+   break;
+
+  case "memory":
+   if(action==="answer")
+    answerMemory(id,value);
+   break;
+
+  case "math":
+   if(action==="answer")
+    answerMath(id,value);
+   break;
+
+  case "color":
+   if(action==="answer")
+    answerColor(id,value);
+   break;
+
+  case "sequence":
+   if(action==="answer")
+    answerSequence(id,value);
+   break;
+
+  case "odd":
+   if(action==="answer")
+    answerOdd(id,value);
+   break;
+
+  case "quick":
+   if(action==="answer")
+    answerQuick(id,value);
+   break;
+
+  case "bomb":
+   if(action==="answer")
+    answerBomb(id,value);
+   break;
+  case "subject":
+   if(action==="answer")
+    answerSubject(id,value);
+   break;
+
+ }
+
+}
+
+
+/* =========================================================
+   플레이어가 게임 행동 보내기
+========================================================= */
+
+function gameAction(
+ action,
+ value
+){
+
+ const data={
+  type:"action",
+  action,
+  value
+ };
+
+ if(isHost){
+
+  handleHostAction(
+   myId,
+   action,
+   value
+  );
+
+ }else{
+
+  sendToPeer(
+   hostPeerId,
+   data
+  );
+
+ }
+
+}
+
+
+/* =========================================================
+   게임 렌더링
+========================================================= */
+
+function renderGame(){
+ if(!gameState) return;
+ const activeIds=gameState.activeIds || players.map(p=>p.id);
+ if(activeIds.length && !activeIds.includes(myId)){
+  $("game").classList.add("hidden");
+  if(gameState.mode==="duel" && !spectatorNotices.has(gameState.matchId)){
+   spectatorNotices.add(gameState.matchId);
+   addSystem("다른 두 참가자가 1 vs 1 대결 중입니다. 채팅은 계속 이용할 수 있어요.");
+  }
+  return;
+ }
+ $("game").classList.remove("hidden");
+ if(!gameState.running){
+
+  renderResults();
+
+  return;
+
+ }
+
+ switch(gameState.type){
+
+  case "reaction":
+   renderReaction();
+   break;
+
+  case "target":
+   renderTarget();
+   break;
+
+  case "memory":
+   renderMemory();
+   break;
+
+  case "math":
+   renderMath();
+   break;
+
+  case "color":
+   renderColor();
+   break;
+
+  case "sequence":
+   renderSequence();
+   break;
+
+  case "tap":
+   renderTap();
+   break;
+
+  case "odd":
+   renderOdd();
+   break;
+
+  case "quick":
+   renderQuick();
+   break;
+
+  case "bomb":
+   renderBomb();
+   break;
+  case "subject":
+   renderSubject();
+   break;
+
+ }
+
+}
+
+
+/* =========================================================
+   순간 반응 화면
+========================================================= */
+
+function renderReaction(){
+
+ const s=
+  gameState.state;
+
+ let cls="red";
+
+ let text="빨간색";
+
+ if(
+  s.phase==="green"
+ ){
+
+  cls="green";
+  text="지금 누르세요!";
+
+ }
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "⚡ 순간 반응",
+   "화면 전체가 누르는 범위입니다!"
+  )+
+
+  `
+
+   <button
+    class="reaction ${cls}"
+    onclick="gameAction('click')">
+
+    ${text}
+
+   </button>
+
+   <p class="info">
+    초록색이 된 순간부터의 시간이 측정됩니다.
+   </p>
+
+  </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   타겟
+========================================================= */
+
+function renderTarget(){
+
+ const s=
+  gameState.state;
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "🎯 타겟 클릭",
+   "남은 시간: "+
+   s.time+
+   "초"
+  )+
+
+  `
+
+   <div class="board">
+
+    <button
+     class="target"
+     style="
+      left:${s.target.x}%;
+      top:${s.target.y}%;
+     "
+     onclick="gameAction('click')">
+    </button>
+
+   </div>
+
+  </div>
+  `;
+
+}
+
+
+/* =========================================================
+   숫자
+========================================================= */
+
+function renderMemory(){
+
+ const s=
+  gameState.state;
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "🧠 숫자 기억",
+   s.visible
+    ?"숫자를 기억하세요."
+    :"기억한 숫자를 입력하세요."
+  )+
+
+  `
+
+   <div class="number">
+    ${s.visible?s.number:"?????"}
+   </div>
+
+   ${
+    !s.visible
+     ?`
+
+      <input
+       id="answer"
+       class="answer"
+       inputmode="numeric"
+       maxlength="5"
+       placeholder="숫자">
+
+      <br>
+
+      <button
+       class="action"
+       onclick="
+        gameAction(
+         'answer',
+         document.getElementById('answer').value
+        )
+       ">
+       제출
+      </button>
+
+     `
+     :""
+   }
+
+  </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   계산
+========================================================= */
+
+function renderMath(){
+
+ const s=
+  gameState.state;
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "🔢 빠른 계산",
+   "정답을 입력하세요."
+  )+
+
+  `
+
+   <div class="number">
+    ${s.a} ${s.op} ${s.b} = ?
+   </div>
+
+   <input
+    id="answer"
+    class="answer"
+    inputmode="numeric"
+    placeholder="정답">
+
+   <br>
+
+   <button
+    class="action"
+    onclick="
+     gameAction(
+      'answer',
+      document.getElementById('answer').value
+     )
+    ">
+    제출
+   </button>
+
+  </div>
+  `;
+
+}
+
+
+/* =========================================================
+   색
+========================================================= */
+
+function renderColor(){
+
+ const s=
+  gameState.state;
+
+ const colors=[
+  ["빨강","#e5485d"],
+  ["파랑","#4d7cff"],
+  ["초록","#31bd79"],
+  ["노랑","#dcb83f"]
+ ];
+
+ const target=
+  colors[s.correct];
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "🎨 색깔 맞히기",
+   "위의 색과 같은 색을 누르세요."
+  )+
+
+  `
+
+   <div
+    style="
+     width:170px;
+     height:120px;
+     margin:15px auto;
+     border-radius:20px;
+     background:${target[1]};
+     border:4px solid white;
+    ">
+   </div>
+
+   <div class="colors">
+
+    ${
+     colors.map(
+      (c,i)=>`
+
+       <button
+        class="colorBtn"
+        style="background:${c[1]}"
+        onclick="
+         gameAction(
+          'answer',
+          ${i}
+         )
+        ">
+        ${c[0]}
+       </button>
+
+      `
+     ).join("")
+    }
+
+   </div>
+
+  </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   순서
+========================================================= */
+
+function renderSequence(){
+
+ const s=
+  gameState.state;
+
+ if(
+  s.phase==="show"
+ ){
+
+  const value=
+   s.index>=0
+    ?Number(
+      s.sequence[s.index]
+     )+1
+    :"●";
+
+  $("gameBody").innerHTML=
+   topHTML(
+    "🧩 순서 기억",
+    "숫자의 순서를 기억하세요."
+   )+
+
+   `
+
+    <div class="number">
+     ${value}
+    </div>
+
+   </div>
+
+   `;
+
+  return;
+
+ }
+
+ localSequence=[];
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "🧩 순서 기억",
+   "나온 순서대로 누르세요."
+  )+
+
+  `
+
+   <div class="sequence">
+
+    ${
+     Array.from(
+      {length:9},
+      (_,i)=>`
+
+       <button
+        class="seq"
+        onclick="sequenceClick(${i})">
+        ${i+1}
+       </button>
+
+      `
+     ).join("")
+    }
+
+   </div>
+
+   <div
+    id="sequenceText"
+    class="info">
+    입력:
+   </div>
+
+   <button
+    class="action"
+    onclick="
+     gameAction(
+      'answer',
+      localSequence
+     );
+     localSequence=[];
+    ">
+    제출
+   </button>
+
+  </div>
+  `;
+
+}
+
+
+function sequenceClick(n){
+
+ if(
+  localSequence.length>=
+  gameState.state.sequence.length
+ )return;
+
+ localSequence.push(n);
+
+ $("sequenceText").textContent=
+  "입력: "+
+  localSequence
+   .map(x=>x+1)
+   .join(" → ");
+
+}
+
+
+/* =========================================================
+   연타
+========================================================= */
+
+function renderTap(){
+
+ const s=
+  gameState.state;
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "👆 연타 대결",
+   "남은 시간: "+
+   s.time+
+   "초"
+  )+
+
+  `
+
+   <button
+    class="reaction green"
+    onclick="gameAction('click')">
+    계속 누르세요!
+   </button>
+
+  </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   다른 숫자
+========================================================= */
+
+function renderOdd(){
+
+ const s=
+  gameState.state;
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "🔍 다른 숫자 찾기",
+   "하나만 다른 숫자를 찾으세요."
+  )+
+
+  `
+
+   <div class="tileGrid">
+
+    ${
+     s.numbers.map(
+      (n,i)=>`
+
+       <button
+        class="tile"
+        onclick="
+         gameAction(
+          'answer',
+          ${i}
+         )
+        ">
+        ${n}
+       </button>
+
+      `
+     ).join("")
+    }
+
+   </div>
+
+  </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   모양
+========================================================= */
+
+function renderQuick(){
+
+ const s=
+  gameState.state;
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "◆ 모양 기억",
+   "위에 나온 모양과 같은 것을 선택하세요."
+  )+
+
+  `
+
+   <div class="number">
+    ${s.symbols[s.correct]}
+   </div>
+
+   <div class="shapes">
+
+    ${
+     s.symbols.map(
+      (x,i)=>`
+
+       <button
+        class="shape"
+        onclick="
+         gameAction(
+          'answer',
+          ${i}
+         )
+        ">
+        ${x}
+       </button>
+
+      `
+     ).join("")
+    }
+
+   </div>
+
+  </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   안전칸
+========================================================= */
+
+function renderBomb(){
+
+ $("gameBody").innerHTML=
+  topHTML(
+   "💣 안전 칸",
+   "안전한 칸 하나를 선택하세요."
+  )+
+
+  `
+
+   <div class="tileGrid">
+
+    ${
+     [0,1,2,3,4].map(
+      i=>`
+
+       <button
+        class="tile"
+        onclick="
+         gameAction(
+          'answer',
+          ${i}
+         )
+        ">
+        ?
+       </button>
+
+      `
+     ).join("")
+    }
+
+   </div>
+
+   <div class="info">
+    잘못 고르면 점수가 1점 내려갑니다.
+   </div>
+
+  </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   결과
+========================================================= */
+
+function renderResults(){
+
+ rememberFinishedMatch();
+ const results=
+  gameState.results || [];
+
+ $("gameBody").innerHTML=`
+
+  <div class="play">
+
+   <h2>🏆 게임 결과</h2>
+
+   <div class="result">
+
+    ${
+     results.map(
+      (p,i)=>`
+
+       <div
+        class="
+         resultRow
+         ${i===0?"first":""}
+        ">
+
+        <span>
+         ${i===0?"🏆 ":""}
+         ${i+1}위
+         ${clean(p.name)}
+        </span>
+
+        <b>
+         ${p.score}점
+        </b>
+
+       </div>
+
+      `
+     ).join("")
+    }
+
+   </div>
+
+   <button class="action" onclick="showMyHistory()">내 전적 / 패배 기록</button>
+   ${
+    isHost
+     ?`
+      <button class="action" onclick="showGameMenu()">다른 게임</button>
+     `
+     :""
+   }
+
+  </div>
+
+ `;
+
+}
+
+
+/* =========================================================
+   공통
+========================================================= */
+
+function topHTML(
+ title,
+ info
+){
+
+ return `
+
+  <div class="play">
+
+   <h2>${title}</h2>
+
+   <div class="info">
+    ${info}
+    <br>
+    ${gameState.round}/3 라운드
+   </div>
+
+ `;
+
+}
+
+
+function title(type){
+
+ return {
+
+  reaction:"⚡ 순간 반응",
+  target:"🎯 타겟 클릭",
+  memory:"🧠 숫자 기억",
+  math:"🔢 빠른 계산",
+  color:"🎨 색깔 맞히기",
+  sequence:"🧩 순서 기억",
+  tap:"👆 연타 대결",
+  odd:"🔍 다른 숫자 찾기",
+  quick:"◆ 모양 기억",
+  bomb:"💣 안전 칸",
+  subject:"📚 과목별 퀴즈 배틀"
+
+ }[type];
+
+}
+
+
+function description(type){
+
+ return {
+
+  reaction:
+   "빨간색에서 초록색으로 바뀌는 순간 누르세요.",
+
+  target:
+   "15초 동안 움직이는 타겟을 최대한 많이 누르세요.",
+
+  memory:
+   "잠깐 나타난 숫자를 기억하세요.",
+
+  math:
+   "계산 결과를 빠르게 입력하세요.",
+
+  color:
+   "위에 나온 색과 같은 색을 선택하세요.",
+
+  sequence:
+   "나타난 숫자의 순서를 기억하세요.",
+
+  tap:
+   "8초 동안 최대한 많이 누르세요.",
+
+  odd:
+   "다른 숫자 하나를 찾아 누르세요.",
+
+  quick:
+   "나온 모양과 같은 모양을 선택하세요.",
+
+  bomb:
+   "5개 중 안전한 칸을 찾으세요.",
+  subject:
+   "초등학교 6학년 국어·수학·사회·과학·영어 문제를 풉니다."
+
+ }[type];
+
+}
+
+
+/* =========================================================
+   나가기
+========================================================= */
+
+function leaveRoom(){
+ try{
+  if(peer) peer.destroy();
+ }catch(e){console.warn("방 연결 종료 중 오류",e);}
+ location.href=location.pathname;
+}
+window.leaveRoom=leaveRoom;
+$("leaveBtn").onclick=leaveRoom;
+
+
+/* =========================================================
+   초기화
+========================================================= */
+
+$("code").oninput =
+ function(){
+
+  this.value=
+   this.value
+    .replace(/\D/g,"")
+    .slice(0,6);
+
+ };
+
+
+$("name").onkeydown =
+ function(e){
+
+  if(
+   e.key==="Enter"
+  ){
+   $("createBtn").click();
+  }
+
+ };
+
+
+$("code").onkeydown =
+ function(e){
+
+  if(
+   e.key==="Enter"
+  ){
+   $("joinBtn").click();
+  }
+
+ };
+
+
+/*
+  URL로 들어온 경우에는
+  방장 Peer ID가 이미 있으므로
+  자동으로 연결할 수 있습니다.
+*/
+
+async function autoJoinFromLink(){
+
+ if(
+  !urlRoom ||
+  !urlHost
+ )return;
+
+ const name =
+  clean(
+   $("name").value
+  ).slice(0,20);
+
+ /*
+  닉네임을 입력하지 않은 상태에서는
+  자동 참가를 하지 않고
+  사용자가 이름을 입력하도록 합니다.
+ */
+
+}
+
+
+/* 화면 시작 */
+
+console.log(
+ "공부 게임 READY"
+);
+
+</script>
+
+</body>
+</html>
